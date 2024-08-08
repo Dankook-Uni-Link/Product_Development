@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "imageUrl": "https://img1.kakaocdn.net/thumb/C320x320@2x.fwebp.q82/?fname=https%3A%2F%2Fst.kakaocdn.net%2Fproduct%2Fgift%2Fproduct%2F20240722133113_bbdab86a999d42f39c45b75738b6112e.png",
+    "storeName": "버거킹",
+    "productName": "불고기와퍼주니어세트",
+    "price": "5,000원"
+  },
+  {
+    "id": 2,
+    "imageUrl": "https://img1.kakaocdn.net/thumb/C320x320@2x.fwebp.q82/?fname=https%3A%2F%2Fst.kakaocdn.net%2Fproduct%2Fgift%2Fproduct%2F20211217124737_5c87ae38718141e5bbdf66234a307dce.jpg",
+    "storeName": "설빙",
+    "productName": "애플망고치즈설빙",
+    "price": "13,900원"
+  },
+  {
+    "id": 3,
+    "imageUrl": "https://img1.kakaocdn.net/thumb/C320x320@2x.fwebp.q82/?fname=https%3A%2F%2Fst.kakaocdn.net%2Fproduct%2Fgift%2Fproduct%2F20231010111037_e02c3db63b0248ec82ad0aaa67f57ca4.jpg",
+    "storeName": "스타벅스",
+    "productName": "아이스 카페 아메리카노 T2",
+    "price": "9,000원"
+  },
+  {
+    "id": 4,
+    "imageUrl": "https://img1.kakaocdn.net/thumb/C320x320@2x.fwebp.q82/?fname=https%3A%2F%2Fst.kakaocdn.net%2Fproduct%2Fgift%2Fproduct%2F20230823153529_37aa37bcef074955ab6548f7fc799c18.jpg",
+    "storeName": "맘스터치",
+    "productName": "싸이버거세트",
+    "price": "6,900원"
+  },
+  {
+    "id": 5,
+    "imageUrl": "https://img1.kakaocdn.net/thumb/C320x320@2x.fwebp.q82/?fname=https%3A%2F%2Fst.kakaocdn.net%2Fproduct%2Fgift%2Fproduct%2F20240722133113_bbdab86a999d42f39c45b75738b6112e.png",
+    "storeName": "버거킹",
+    "productName": "불고기와퍼주니어세트",
+    "price": "5,000원"
+  },
+  {
+    "id": 6,
+    "imageUrl": "https://img1.kakaocdn.net/thumb/C320x320@2x.fwebp.q82/?fname=https%3A%2F%2Fst.kakaocdn.net%2Fproduct%2Fgift%2Fproduct%2F20211217124737_5c87ae38718141e5bbdf66234a307dce.jpg",
+    "storeName": "설빙",
+    "productName": "애플망고치즈설빙",
+    "price": "13,900원"
+  },
+  {
+    "id": 7,
+    "imageUrl": "https://img1.kakaocdn.net/thumb/C320x320@2x.fwebp.q82/?fname=https%3A%2F%2Fst.kakaocdn.net%2Fproduct%2Fgift%2Fproduct%2F20231010111037_e02c3db63b0248ec82ad0aaa67f57ca4.jpg",
+    "storeName": "스타벅스",
+    "productName": "아이스 카페 아메리카노 T2",
+    "price": "9,000원"
+  },
+  {
+    "id": 8,
+    "imageUrl": "https://img1.kakaocdn.net/thumb/C320x320@2x.fwebp.q82/?fname=https%3A%2F%2Fst.kakaocdn.net%2Fproduct%2Fgift%2Fproduct%2F20230823153529_37aa37bcef074955ab6548f7fc799c18.jpg",
+    "storeName": "맘스터치",
+    "productName": "싸이버거세트",
+    "price": "6,900원"
+  }
+]

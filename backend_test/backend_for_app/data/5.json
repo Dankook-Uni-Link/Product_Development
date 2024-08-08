@@ -1,0 +1,67 @@
+{
+  "surveyTitle": "독서 습관 설문조사",
+  "surveyDescription": "이 설문은 귀하의 독서 습관과 선호도에 대한 정보를 수집하기 위한 것입니다. 아래의 각 문항에 대해 귀하의 독서 습관에 가장 가까운 답변을 선택해 주세요.",
+  "totalQuestions": 10,
+  "reward": "2500원",
+  "Target_number": 100,
+  "winning_number": 20,
+  "price": "18,000원",
+  "questions": [
+    {
+      "question": "일주일에 평균 얼마나 책을 읽으십니까?",
+      "type": "single_choice",
+      "options": ["전혀 읽지 않는다", "1-2시간", "3-4시간", "5시간 이상"]
+    },
+    {
+      "question": "어떤 장르의 책을 가장 즐겨 읽으십니까?",
+      "type": "multiple_choice",
+      "options": ["소설", "비소설", "자기계발", "역사", "기타"]
+    },
+    {
+      "question": "주로 어떤 형식의 책을 읽으십니까?",
+      "type": "multiple_choice",
+      "options": ["종이책", "전자책 (eBook)", "오디오북", "기타"]
+    },
+    {
+      "question": "책을 주로 어디서 구입하십니까?",
+      "type": "multiple_choice",
+      "options": ["온라인 서점", "오프라인 서점", "도서관", "중고 서점", "기타"]
+    },
+    {
+      "question": "한 번에 몇 권의 책을 읽으십니까?",
+      "type": "single_choice",
+      "options": ["한 권", "두 권", "세 권", "네 권 이상"]
+    },
+    {
+      "question": "책을 읽는 주된 이유는 무엇입니까?",
+      "type": "multiple_choice",
+      "options": ["지식 습득", "스트레스 해소", "여가 활동", "취미", "기타"]
+    },
+    {
+      "question": "주로 언제 책을 읽으십니까?",
+      "type": "single_choice",
+      "options": ["아침", "점심", "저녁", "잠자기 전", "일정하지 않다"]
+    },
+    {
+      "question": "책을 읽을 때 어떤 장소를 선호하십니까?",
+      "type": "multiple_choice",
+      "options": ["집", "카페", "도서관", "공원", "기타"]
+    },
+    {
+      "question": "책을 선택할 때 가장 중요하게 생각하는 요소는 무엇입니까?",
+      "type": "multiple_choice",
+      "options": ["저자", "책 제목", "추천/리뷰", "주제", "기타"]
+    },
+    {
+      "question": "독서 습관을 개선하기 위해 어떤 노력을 하고 계십니까?",
+      "type": "multiple_choice",
+      "options": [
+        "독서 모임 참여",
+        "독서 리스트 작성",
+        "목표 설정",
+        "독서 기록",
+        "기타"
+      ]
+    }
+  ]
+}
