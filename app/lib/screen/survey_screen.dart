@@ -38,7 +38,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text('감사합니다!'),
-              content: const Text('설문에 응해주셔서 감사합니다! 리워드를 확인해 보세요!!'),
+              content: const Text('설문에 응해주셔서 감사합니다! \n마이페이지에서 리워드를 확인해 보세요!!'),
               actions: <Widget>[
                 TextButton(
                   child: const Text('확인'),
@@ -183,7 +183,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
             Text(
               currentQuestion.question,
               style: const TextStyle(fontSize: 18),
