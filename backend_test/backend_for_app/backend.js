@@ -3,7 +3,10 @@ const ejs = require("ejs");
 const fs = require("fs");
 const path = require("path");
 const app = express();
+const cors = require("cors");
 const port = 3000;
+
+app.use(cors());
 
 // 특정 파일의 JSON 데이터를 읽어오는 함수
 function readJsonFileSync(filepath, encoding) {
