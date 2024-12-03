@@ -1,0 +1,73 @@
+{
+  "surveyTitle": "식습관 및 식단 설문조사",
+  "surveyDescription": "이 설문은 귀하의 일상적인 식습관과 식단에 대한 정보를 수집하기 위한 것입니다. 아래의 각 문항에 대해 귀하의 생활습관에 가장 가까운 답변을 선택해 주세요.",
+  "totalQuestions": 10,
+  "reward": "2500원",
+  "Target_number": 100,
+  "winning_number": 20,
+  "price": "19,000원",
+  "questions": [
+    {
+      "question": "하루에 몇 끼를 드십니까?",
+      "type": "single_choice",
+      "options": ["1끼", "2끼", "3끼", "4끼 이상"]
+    },
+    {
+      "question": "하루에 얼마나 자주 간식을 드십니까?",
+      "type": "single_choice",
+      "options": ["전혀 먹지 않는다", "1-2번", "3-4번", "5번 이상"]
+    },
+    {
+      "question": "주로 어떤 종류의 음식을 선호하십니까?",
+      "type": "single_choice",
+      "options": ["한식", "중식", "일식", "양식", "기타"]
+    },
+    {
+      "question": "평소 식사를 할 때 주로 어디서 드십니까?",
+      "type": "single_choice",
+      "options": ["집에서", "직장에서", "외식", "배달 음식", "기타"]
+    },
+    {
+      "question": "식단에서 주로 섭취하는 음식군은 무엇입니까?",
+      "type": "multiple_choice",
+      "options": ["곡류", "육류", "채소", "과일", "유제품"]
+    },
+    {
+      "question": "평소에 물을 얼마나 마시십니까?",
+      "type": "single_choice",
+      "options": ["1리터 이하", "1-2리터", "2-3리터", "3리터 이상"]
+    },
+    {
+      "question": "일주일에 얼마나 자주 외식을 하십니까?",
+      "type": "single_choice",
+      "options": ["전혀 하지 않는다", "1-2번", "3-4번", "5번 이상"]
+    },
+    {
+      "question": "식단에서 특정 음식을 피하거나 제한하십니까?",
+      "type": "multiple_choice",
+      "options": [
+        "예, 글루텐",
+        "예, 유제품",
+        "예, 육류",
+        "예, 당류",
+        "아니오, 제한하지 않는다"
+      ]
+    },
+    {
+      "question": "주로 어떤 요리 방법을 선호하십니까?",
+      "type": "single_choice",
+      "options": ["굽기", "튀기기", "삶기", "찌기", "생식"]
+    },
+    {
+      "question": "건강을 위해 특별히 신경 쓰는 식습관이 있습니까?",
+      "type": "multiple_choice",
+      "options": [
+        "예, 채식 위주",
+        "예, 저탄수화물",
+        "예, 고단백",
+        "예, 저지방",
+        "아니오, 특별히 없다"
+      ]
+    }
+  ]
+}
