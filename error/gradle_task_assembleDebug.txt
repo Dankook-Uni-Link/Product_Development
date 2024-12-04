@@ -1,0 +1,18 @@
+PS C:\Users\adrd1\Desktop\Pro\project_survey\Product_Development\app> flutter run  
+Launching lib\main.dart on sdk gphone64 x86 64 in debug mode...
+
+ERROR: JAVA_HOME is set to an invalid directory: /Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation.
+Running Gradle task 'assembleDebug'...                             151ms
+Error: Gradle task assembleDebug failed with exit code 1
+
+
+
+app/android 폴더 이동
+다음 명령어 실행 -> ./gradlew clean build
+
+
+app/android 폴더 이동
+build.gradle -> ext.kotlin_version = '1.7.10' -> ext.kotlin_version = '1.8.10'
