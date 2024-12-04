@@ -1,30 +1,8 @@
 import json
 import mysql.connector
 from mysql.connector import Error
+from connect_db import load_config, connect_to_database, close_connection
 import os
-
-# 기존 DB 연결 함수
-def load_config():
-    with open('config.json', 'r', encoding='utf-8') as file:
-        config = json.load(file)
-    return config
-
-def connect_to_database(config):
-    try:
-        connection = mysql.connector.connect(
-            host=config['host'],
-            port=config['port'],
-            user=config['username'],
-            password=config['password'],
-            database=config['database']
-        )
-        
-        if connection.is_connected():
-            print("MySQL database connection successful")
-            return connection
-    except Error as e:
-        print(f"Error: {e}")
-        return None
 
 # 설문 데이터를 DB에 삽입하는 함수
 def insert_survey_data(connection, survey_data):
@@ -98,7 +76,7 @@ def main():
         else:
             print(f"{file_path} 파일이 존재하지 않습니다.")
     
-    connection.close()
+    close_connection(connection)
 
 if __name__ == "__main__":
     main()
