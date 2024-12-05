@@ -1,0 +1,11 @@
+data_???            ->  데이터를 json 파일 형식으로 저장한 형태
+
+sql                 ->  테이블 생성용 쿼리문
+
+config.json         ->  로컬 데이터베이스 연결용 configuration file
+
+connect_db.py       ->  데이터베이스 접속용 코드 (config.json)
+
+create_???_table    ->  sql 쿼리문을 바탕으로 실제 테이블을 생성하는 코드
+
+insert_???          ->  실제 데이터를 집어넣는 코드

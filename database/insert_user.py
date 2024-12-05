@@ -36,7 +36,7 @@ def main():
         return
     
     # 1.json 파일을 읽어서 사용자 데이터를 삽입
-    file_path = 'user/1.json'
+    file_path = 'data_user/1.json'
     
     # 파일이 존재하는지 확인
     if os.path.exists(file_path):
