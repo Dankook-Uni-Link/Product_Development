@@ -5,7 +5,8 @@ import 'dart:convert';
 
 class ApiService {
   final String baseUrl =
-      "http://10.0.2.2:3000"; // 일반적으로 Android 에뮬레이터에서는 10.0.2.2를 로컬 호스트 주소로 사용한다.
+      //"http://10.0.2.2:3000"; // 일반적으로 Android 에뮬레이터에서는 10.0.2.2를 로컬 호스트 주소로 사용한다.
+      "http://127.0.0.1:3000";
 
   Future<List<Survey>> getSurveyList() async {
     final url = Uri.parse('$baseUrl/surveys'); // 설문조사 목록을 가져오는 엔드포인트
