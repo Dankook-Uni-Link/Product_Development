@@ -1,0 +1,5 @@
+server.js           ->  실제로 돌아가는 메인 서버
+
+user                ->  유저 api 처리 관련 함수들
+
+survey              ->  설문 api 처리 관련 함수들

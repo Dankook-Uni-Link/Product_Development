@@ -35,7 +35,7 @@ if __name__ == "__main__":
     db_connection = connect_to_database(config)
     
     if db_connection:
-        execute_sql_from_file(db_connection, 'sql/question.sql')
+        execute_sql_from_file(db_connection, 'sql/survey/create_question_table.sql')
         
         # 연결 종료
         close_connection(db_connection)

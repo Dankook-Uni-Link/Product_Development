@@ -63,7 +63,7 @@ def main():
     
     # 1.json부터 10.json까지 파일을 순차적으로 읽어들여 데이터 삽입
     for i in range(1, 11):  # 1부터 10까지
-        file_path = f'data/{i}.json'
+        file_path = f'data_question/{i}.json'
         
         # 파일이 존재하는지 확인
         if os.path.exists(file_path):
