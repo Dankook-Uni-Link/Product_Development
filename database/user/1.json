@@ -1,0 +1,23 @@
+[
+    {
+      "username": "user1",
+      "password": "password_1",
+      "email": "john.doe@example.com",
+      "gender": "male",
+      "birthdate": "1990-05-15"
+    },
+    {
+      "username": "user2",
+      "password": "password_2",
+      "email": "jane.smith@example.com",
+      "gender": "female",
+      "birthdate": "1985-11-20"
+    },
+    {
+      "username": "user3",
+      "password": "password_3",
+      "email": "alex.williams@example.com",
+      "gender": "male",
+      "birthdate": "1992-08-30"
+    }
+]
