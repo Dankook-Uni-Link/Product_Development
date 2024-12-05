@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 30),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text("딩굴",
+                    child: Text("sur문",
                         style: GoogleFonts.blackHanSans(
                             fontSize: 40,
                             fontWeight: FontWeight.normal,

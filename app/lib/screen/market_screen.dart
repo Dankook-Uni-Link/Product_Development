@@ -307,7 +307,7 @@ class _MarketScreenState extends State<MarketScreen> {
                   const SizedBox(height: 30),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text("딩굴 마켓",
+                    child: Text("sur문 마켓",
                         style: GoogleFonts.blackHanSans(
                             fontSize: 40,
                             fontWeight: FontWeight.normal,

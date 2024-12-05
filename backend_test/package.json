@@ -1,6 +1,10 @@
 {
   "dependencies": {
+    "cors": "^2.8.5",
     "ejs": "^3.1.10",
-    "express": "^4.19.2"
+    "express": "^4.21.1"
+  },
+  "scripts": {
+    "start": "node ./backend_for_app/backend.js"
   }
 }

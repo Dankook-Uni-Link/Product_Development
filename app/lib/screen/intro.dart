@@ -1,14 +1,15 @@
 import 'package:app/design/colors.dart';
-import 'package:app/screen/home_screen.dart';
+// import 'package:app/screen/home_screen.dart';
+import 'package:app/screen/login_signup_screen.dart';
 import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-void main() {
-  ApiService().getSurvey(1);
-  print("Hello World");
-  runApp(const MyApp());
-}
+// void main() {
+//   ApiService().getSurvey(1);
+//   print("Hello World");
+//   runApp(const MyApp());
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tea Time',
+      title: 'sur문',
       theme: ThemeData(
         primarySwatch: Colors.brown,
       ),
@@ -48,21 +49,34 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         CurvedAnimation(parent: _controller!, curve: Curves.easeInSine);
 
     _controller!.forward();
-    _navigateToHome();
+    _navigateToLogin();
   }
 
-  _navigateToHome() async {
-    await Future.delayed(const Duration(seconds: 5)); // 3초 딜레이
+  // _navigateToHome() async {
+  //   await Future.delayed(const Duration(seconds: 5)); // 3초 딜레이
+  //   Navigator.of(context).pushReplacement(
+  //     PageRouteBuilder(
+  //       pageBuilder: (context, animation, secondaryAnimation) =>
+  //           const HomeScreen(),
+  //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+  //         return FadeTransition(opacity: animation, child: child);
+  //       },
+  //     ),
+  //   );
+  // }
+    _navigateToLogin() async {
+    await Future.delayed(const Duration(seconds: 5)); // 5초 딜레이
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            const HomeScreen(),
+            const LoginSignupScreen(), // LoginSignupScreen으로 이동
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },
       ),
     );
   }
+
 
   @override
   void dispose() {
@@ -83,7 +97,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             //   width: 280,
             //   height: 280,
             // ),
-            Text('딩굴',
+            Text('sur문',
                 style: GoogleFonts.blackHanSans(fontSize: 60, shadows: [
                   Shadow(
                     color:

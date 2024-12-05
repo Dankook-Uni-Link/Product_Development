@@ -3,7 +3,13 @@
 const express = require("express");
 const app = express();
 
-app.get("/", function (req, res) {
+console.log("Starting the server...");
+
+// app.get("/", function (req, res) {
+//   res.send("Hello World");
+// });
+
+app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
@@ -35,4 +41,7 @@ app.get("/animal/:id", (req, res) => {
   res.send({ 항목1: q, 항목2: q.name, 항목3: q.age });
 });
 
-app.listen(3000);
+// app.listen(3000);
+app.listen(3000, () => {
+  console.log("Server running at http://localhost:3000/");
+});
