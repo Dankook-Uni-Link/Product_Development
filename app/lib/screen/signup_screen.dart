@@ -53,7 +53,8 @@ class _SignupScreenState extends State<SignupScreen> {
   // final TextEditingController _genderController = TextEditingController();
   String? _selectedGender; // 선택한 성별 저장
   final TextEditingController _birthdateController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();  
+  final _apiService = ApiService();
   // bool _isUsernameAvailable = true;  // 아이디 중복 검사 결과 저장
 
   // // 아이디 중복 검사 함수
@@ -86,11 +87,11 @@ class _SignupScreenState extends State<SignupScreen> {
   // }
 
   // 아이디 중복을 확인하는 mock 함수
-  Future<bool> _mockCheckUsernameAvailability(String username) async {
-    // 예시로 "testuser"라는 아이디는 이미 사용 중이라고 가정
-    await Future.delayed(const Duration(seconds: 1)); // API 호출 시간 시뮬레이션
-    return username == 'testuser'; // 'testuser'는 중복된 아이디
-  }
+  // Future<bool> _mockCheckUsernameAvailability(String username) async {
+  //   // 예시로 "testuser"라는 아이디는 이미 사용 중이라고 가정
+  //   await Future.delayed(const Duration(seconds: 1)); // API 호출 시간 시뮬레이션
+  //   return username == 'testuser'; // 'testuser'는 중복된 아이디
+  // }
 
   String? _validateDate(String? value) {
     if (value == null || value.isEmpty) {
@@ -130,17 +131,83 @@ class _SignupScreenState extends State<SignupScreen> {
 
     return null;
   }
+  // void _signup() async {
+  //   // 회원가입 로직 구현
+  //   if (_formKey.currentState!.validate()) {
+  //     String username = _usernameController.text;
+  //     String email = _emailController.text;
+  //     String password = _passwordController.text;
+  //     String gender = _genderController.text;
+  //     String birthdate = _birthdateController.text;
 
-  void _signup() {
+  //     // 회원가입 API 호출
+  //     try {
+  //       final result = await _apiService.signup(username, email, password, gender, birthdate);
+  //       if(result['status'] == 'success'){
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(content: Text('회원가입이 성공적으로 완료되었습니다.')),
+  //         );
+  //         // 회원가입 후 로그인 페이지로 이동
+  //         Navigator.pushReplacement(
+  //           context,
+  //           MaterialPageRoute(builder: (context) => const LoginScreen()),
+  //         );
+  //       } else {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(content: Text('회원가입 실패. 다시 시도해주세요.')),
+  //         ); 
+  //       }
+  //     } catch (e) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text('서버에 연결할 수 없습니다.')),
+  //       );
+  //     }
+  //   }
+  // }
+
+  void printUserData() {
+    // 변수들에 저장된 값을 출력
+    String username = _usernameController.text;
+    String password = _passwordController.text;
+    String email = _emailController.text;
+    String? gender = _selectedGender; // 선택된 성별
+    String birthdate = _birthdateController.text;
+
+    print("Username: $username");
+    print("Password: $password");
+    print("Email: $email");
+    print("Gender: $gender");
+    print("Birthdate: $birthdate");
+  }
+
+
+  Future<void> _signup() async {
     if (_formKey.currentState!.validate()) { //&& _isUsernameAvailable // 아이디 중복X
       // 회원가입 로직
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('회원가입이 성공적으로 완료되었습니다.')),
-      );      
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
+      String username = _usernameController.text;
+      String password = _passwordController.text;
+      String email = _emailController.text;
+      String? gender = _selectedGender; // 선택된 성별
+      String birthdate = _birthdateController.text;
+      printUserData();
+
+      final result = await _apiService.signup(username, password, email, gender, birthdate);
+
+      if (result.success) { // 회원가입 성공 여부 확인 (success 필드 예시)
+        // final loginData = result.data; // Login 객체 가져오기
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('회원가입이 성공적으로 완료되었습니다.')),
+        );      
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      } else {
+        // 실패 시 에러 메시지 출력
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('회원가입 실패: ${result.message}')), // 서버에서 반환된 에러 메시지
+        );
+      }
     }
     // else {
     //   if (!_isUsernameAvailable) {

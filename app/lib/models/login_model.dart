@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 
+class ApiResponse<T> {
+  final bool success;
+  final String message;
+  final T? data; // 제네릭을 사용해 데이터 타입 유연화
+
+  ApiResponse({required this.success, required this.message, this.data});
+}
+
 class Login {
   final int id;
   final String username;

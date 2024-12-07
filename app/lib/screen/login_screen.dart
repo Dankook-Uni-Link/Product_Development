@@ -34,10 +34,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final result = await _apiService.login(username, password);
 
-      if(result['succes'] ){
+      if(result.success){
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('이메일 또는 비밀번호가 일치하지 않습니다.')),
         );
       }
     } 
@@ -48,39 +52,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _signup() async {
-    // 회원가입 로직 구현
-    if (_formKey.currentState!.validate()) {
-      String username = _usernameController.text;
-      String email = _emailController.text;
-      String password = _passwordController.text;
-      String gender = _genderController.text;
-      String birthdate = _birthdateController.text;
-
-      // 회원가입 API 호출
-      try {
-        final result = await _apiService.signup(username, email, password, gender, birthdate);
-        if(result['status'] == 'success'){
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('회원가입이 성공적으로 완료되었습니다.')),
-          );
-          // 회원가입 후 로그인 페이지로 이동
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('회원가입 실패. 다시 시도해주세요.')),
-          ); 
-        }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('서버에 연결할 수 없습니다.')),
-        );
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
