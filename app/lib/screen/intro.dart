@@ -1,6 +1,6 @@
 import 'package:app/design/colors.dart';
 // import 'package:app/screen/home_screen.dart';
-import 'package:app/screen/login_signup_screen.dart';
+import 'package:app/screen/login_screen.dart';
 import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -69,7 +69,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            const LoginSignupScreen(), // LoginSignupScreen으로 이동
+            const LoginScreen(), // LoginSignupScreen으로 이동
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },

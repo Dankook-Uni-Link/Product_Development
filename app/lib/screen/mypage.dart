@@ -1,5 +1,5 @@
 import 'package:app/design/colors.dart';
-import 'package:app/screen/login_signup_screen.dart'; 
+import 'package:app/screen/login_screen.dart'; 
 import 'package:app/screen/gifticon_screen.dart';
 import 'package:app/screen/home_screen.dart';
 import 'package:app/screen/survey_screen.dart';
@@ -35,7 +35,7 @@ class MyPageScreen extends StatelessWidget {
                 // 로그아웃 버튼을 누르면 로그인 페이지로 이동
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => const LoginSignupScreen()),
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
                   (Route<dynamic> route) => false, // 모든 기존 라우트 삭제
                 );
                 // Navigator.pushReplacement(
