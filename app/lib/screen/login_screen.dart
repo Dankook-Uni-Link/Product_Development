@@ -18,10 +18,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _genderController = TextEditingController();
-  final TextEditingController _birthdateController = TextEditingController();
+  // final TextEditingController _emailController = TextEditingController();
+  // final TextEditingController _genderController = TextEditingController();
+  // final TextEditingController _birthdateController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _apiService = ApiService();
 
@@ -33,24 +33,45 @@ class _LoginScreenState extends State<LoginScreen> {
       String password = _passwordController.text;
 
       final result = await _apiService.login(username, password);
-
-      if(result.success){
+      // print('Result Success: ${result.success}, Message: ${result.message}');
+      // if(result.success)
+      // if(username == 'user1' && password == '1234')
+      if(result.success) {
+        print('success');
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('이메일 또는 비밀번호가 일치하지 않습니다.')),
-        );
+        print('false');
+        // 로그인 실패 시 Dialog 창을 띄움
+        _showErrorDialog(result.message ?? '이메일 또는 비밀번호를 확인해주세요.');
       }
-    } 
-    else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('이메일 또는 비밀번호가 일치하지 않습니다.')),
-      );
+    } else {
+      _showErrorDialog('알 수 없는 오류가 발생했습니다.');
     }
   }
+
+  // 로그인 실패 시 표시할 Dialog
+void _showErrorDialog(String message) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('로그인 실패'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Dialog 닫기
+            },
+            child: const Text('확인'),
+          ),
+        ],
+      );
+    },
+  );
+}
 
 
   @override

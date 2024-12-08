@@ -165,22 +165,6 @@ class _SignupScreenState extends State<SignupScreen> {
   //   }
   // }
 
-  void printUserData() {
-    // 변수들에 저장된 값을 출력
-    String username = _usernameController.text;
-    String password = _passwordController.text;
-    String email = _emailController.text;
-    String? gender = _selectedGender; // 선택된 성별
-    String birthdate = _birthdateController.text;
-
-    print("Username: $username");
-    print("Password: $password");
-    print("Email: $email");
-    print("Gender: $gender");
-    print("Birthdate: $birthdate");
-  }
-
-
   Future<void> _signup() async {
     if (_formKey.currentState!.validate()) { //&& _isUsernameAvailable // 아이디 중복X
       // 회원가입 로직
@@ -189,7 +173,6 @@ class _SignupScreenState extends State<SignupScreen> {
       String email = _emailController.text;
       String? gender = _selectedGender; // 선택된 성별
       String birthdate = _birthdateController.text;
-      printUserData();
 
       final result = await _apiService.signup(username, password, email, gender, birthdate);
 
