@@ -2,7 +2,7 @@ import 'package:app/design/colors.dart';
 import 'package:app/screen/home_screen.dart';
 import 'package:app/screen/make_survey_screen.dart';
 import 'package:app/screen/market_screen.dart';
-import 'package:app/screen/mypage.dart';
+import 'package:app/screen/my_page.dart';
 import 'package:app/screen/raffle_screen.dart';
 import 'package:app/screen/survey_screen.dart';
 import 'package:app/screen/vote_screen.dart';

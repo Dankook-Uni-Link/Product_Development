@@ -5,6 +5,9 @@ const path = require("path");
 const app = express();
 const port = 3000;
 
+// POST 요청의 body를 파싱하기 위한 미들웨어 추가
+app.use(express.json());
+
 // 특정 파일의 JSON 데이터를 읽어오는 함수
 function readJsonFileSync(filepath, encoding) {
   if (typeof encoding === "undefined") {
@@ -32,6 +35,29 @@ function getGifticonData() {
   const filepath = path.join(__dirname, "gifticon", "gifticons.json");
   return readJsonFileSync(filepath);
 }
+
+// 새로운 설문을 저장하는 함수
+function saveSurvey(surveyData) {
+  const dirPath = path.join(__dirname, "data");
+  const files = fs.readdirSync(dirPath);
+  const newId = files.length + 1;
+  const filepath = path.join(dirPath, `${newId}.json`);
+
+  fs.writeFileSync(filepath, JSON.stringify(surveyData, null, 2));
+  return newId;
+}
+
+// POST 요청 처리 추가
+app.post("/surveys", (req, res) => {
+  try {
+    const surveyData = req.body;
+    const newId = saveSurvey(surveyData);
+    res.status(201).json({ id: newId, message: "Survey created successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Failed to create survey");
+  }
+});
 
 app.set("view engine", "ejs");
 app.set("survey", "./survey");

@@ -83,7 +83,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             //   width: 280,
             //   height: 280,
             // ),
-            Text('딩굴',
+            Text('Sur문',
                 style: GoogleFonts.blackHanSans(fontSize: 60, shadows: [
                   Shadow(
                     color:
