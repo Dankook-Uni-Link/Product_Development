@@ -62,7 +62,7 @@ class RaffleScreen extends StatelessWidget {
               ),
               const SizedBox(height: 50),
               const Text(
-                "참가비 : 10,000원",
+                "참가비 : 1,000 포인트",
                 style: TextStyle(
                   fontSize: 18,
                   color: Colors.grey,

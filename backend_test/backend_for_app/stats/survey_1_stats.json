@@ -1,0 +1,34 @@
+{
+  "surveyId": 1,
+  "currentResponses": 45,
+  "targetNumber": 100,
+  "responseRate": 45.0,
+  "expectedPoints": 45000,
+  "responsesByAge": {
+    "20대": 25,
+    "30대": 15,
+    "40대": 5
+  },
+  "responsesByGender": {
+    "남성": 20,
+    "여성": 25
+  },
+  "responsesByLocation": {
+    "서울": 20,
+    "경기": 15,
+    "부산": 10
+  },
+  "questionStats": [
+    {
+      "questionId": 1,
+      "question": "주로 즐기는 취미는?",
+      "type": "single_choice",
+      "options": {
+        "운동": 15,
+        "게임": 10,
+        "독서": 12,
+        "음악감상": 8
+      }
+    }
+  ]
+}

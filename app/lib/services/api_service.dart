@@ -98,4 +98,59 @@ class ApiService {
       throw Exception('Error: $e');
     }
   }
+
+  Future<List<PointHistory>> getPointHistory() async {
+    final url = Uri.parse('$baseUrl/points/history');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = jsonDecode(response.body);
+        return jsonList.map((json) => PointHistory.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load point history');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+
+  Future<int> getCurrentPoints() async {
+    final url = Uri.parse('$baseUrl/points/current');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> json = jsonDecode(response.body);
+        return json['points'] as int;
+      } else {
+        throw Exception('Failed to load current points');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+
+  Future<SurveyStats> getSurveyStats(int? surveyId) async {
+    if (surveyId == null) {
+      throw Exception('Survey ID cannot be null');
+    }
+
+    final url = Uri.parse('$baseUrl/survey/$surveyId/stats');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        return SurveyStats.fromJson(json);
+      } else {
+        throw Exception('Failed to load survey statistics');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
 }

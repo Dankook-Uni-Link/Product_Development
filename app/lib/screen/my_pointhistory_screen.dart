@@ -1,6 +1,9 @@
 import 'package:app/design/colors.dart';
+import 'package:app/models/survey_model.dart';
+import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
 
+// 화면 구현
 class PointHistoryScreen extends StatelessWidget {
   const PointHistoryScreen({super.key});
 
@@ -23,70 +26,81 @@ class PointHistoryScreen extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: Column(
-        children: [
-          // 현재 보유 포인트 카드
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.third,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Column(
-              children: [
-                Text(
-                  '현재 보유 포인트',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  '1,000 P',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
+      body: FutureBuilder<List<PointHistory>>(
+        future: ApiService().getPointHistory(), // API 메서드 필요
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-          // 포인트 내역 리스트
-          Expanded(
-            child: ListView(
-              children: [
-                _buildHistoryItem(
-                  title: '대학생 취미 설문 참여',
-                  date: '2024.03.08',
-                  points: '+1,000',
-                  isPositive: true,
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('포인트 내역이 없습니다.'));
+          }
+
+          return Column(
+            children: [
+              // 현재 보유 포인트 카드
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.third,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                _buildHistoryItem(
-                  title: '음악 취향 설문 등록',
-                  date: '2024.03.07',
-                  points: '-2,000',
-                  isPositive: false,
+                child: Column(
+                  children: [
+                    const Text(
+                      '현재 보유 포인트',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    FutureBuilder<int>(
+                      future: ApiService().getCurrentPoints(), // API 메서드 필요
+                      builder: (context, pointSnapshot) {
+                        if (!pointSnapshot.hasData) {
+                          return const CircularProgressIndicator(
+                              color: Colors.white);
+                        }
+                        return Text(
+                          '${pointSnapshot.data} P',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
-                // 더 많은 내역들...
-              ],
-            ),
-          ),
-        ],
+              ),
+
+              // 포인트 내역 리스트
+              Expanded(
+                child: ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final history = snapshot.data![index];
+                    return _buildHistoryItem(history);
+                  },
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildHistoryItem({
-    required String title,
-    required String date,
-    required String points,
-    required bool isPositive,
-  }) {
+  Widget _buildHistoryItem(PointHistory history) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -103,7 +117,7 @@ class PointHistoryScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  history.title,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -111,7 +125,7 @@ class PointHistoryScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  date,
+                  '${history.date.year}.${history.date.month}.${history.date.day}',
                   style: TextStyle(
                     color: Colors.grey[600],
                     fontSize: 14,
@@ -121,9 +135,9 @@ class PointHistoryScreen extends StatelessWidget {
             ),
           ),
           Text(
-            points,
+            '${history.type == 'earn' ? '+' : '-'}${history.points}',
             style: TextStyle(
-              color: isPositive ? Colors.blue : Colors.red,
+              color: history.type == 'earn' ? Colors.blue : Colors.red,
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),

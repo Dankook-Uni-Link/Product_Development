@@ -59,6 +59,7 @@ app.post("/surveys", (req, res) => {
   }
 });
 
+// 뷰 엔진 설정
 app.set("view engine", "ejs");
 app.set("survey", "./survey");
 
@@ -95,6 +96,42 @@ app.get("/gifticons", (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Failed to load gifticons");
+  }
+});
+
+// 포인트 내역 조회
+app.get("/points/history", (req, res) => {
+  try {
+    const pointHistory = readJsonFileSync(
+      path.join(__dirname, "points", "points_history.json")
+    );
+    res.json(pointHistory);
+  } catch (error) {
+    res.status(500).send("Failed to load point history");
+  }
+});
+
+// 현재 포인트 조회
+app.get("/points/current", (req, res) => {
+  try {
+    const currentPoints = readJsonFileSync(
+      path.join(__dirname, "points", "current_points.json")
+    );
+    res.json(currentPoints);
+  } catch (error) {
+    res.status(500).send("Failed to load current points");
+  }
+});
+
+// 설문 통계 조회
+app.get("/survey/:id/stats", (req, res) => {
+  try {
+    const surveyStats = readJsonFileSync(
+      path.join(__dirname, "stats", `survey_${req.params.id}_stats.json`)
+    );
+    res.json(surveyStats);
+  } catch (error) {
+    res.status(500).send("Failed to load survey statistics");
   }
 });
 

@@ -1,5 +1,6 @@
 import 'package:app/design/colors.dart';
 import 'package:app/models/survey_model.dart';
+import 'package:app/screen/my_surveyState_screen.dart';
 import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
 
@@ -162,6 +163,14 @@ class _MySurveysScreenState extends State<MySurveysScreen>
                 TextButton.icon(
                   onPressed: () {
                     // TODO: 통계 화면으로 이동
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SurveyStatsScreen(
+                          survey: survey,
+                        ),
+                      ),
+                    );
                   },
                   icon: const Icon(Icons.bar_chart),
                   label: const Text('통계 보기'),

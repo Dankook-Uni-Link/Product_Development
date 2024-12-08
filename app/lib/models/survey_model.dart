@@ -1,4 +1,5 @@
 class Survey {
+  final int? id; // nullable로 변경
   final String surveyTitle;
   final String surveyDescription;
   final int totalQuestions;
@@ -11,9 +12,10 @@ class Survey {
   final DateTime createdAt;
   final bool isEnded;
   final int currentResponses;
-  final String status; // "진행중" | "마감됨"
+  final String status;
 
   Survey({
+    this.id, // required 제거
     required this.surveyTitle,
     required this.surveyDescription,
     required this.totalQuestions,
@@ -36,30 +38,26 @@ class Survey {
         .toList();
 
     return Survey(
-      surveyTitle: json['surveyTitle'] ?? '',
-      surveyDescription: json['surveyDescription'] ?? '',
-      totalQuestions: json['totalQuestions'] ?? 0,
-      reward: json['reward']?.toString() ?? '0',
-      targetNumber: json['Target_number'] is String
-          ? int.parse(json['Target_number'])
-          : (json['Target_number'] ?? 0),
-      winningNumber: json['winning_number'] is String
-          ? int.parse(json['winning_number'])
-          : (json['winning_number'] ?? 0),
-      price: json['price']?.toString() ?? '0',
+      id: json['id'],
+      surveyTitle: json['surveyTitle'],
+      surveyDescription: json['surveyDescription'],
+      totalQuestions: json['totalQuestions'],
+      reward: json['reward'],
+      targetNumber: json['Target_number'],
+      winningNumber: json['winning_number'],
+      price: json['price'],
       questions: questionList,
       targetConditions:
-          SurveyTargetConditions.fromJson(json['targetConditions'] ?? {}),
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
-          : DateTime.now(),
-      isEnded: json['isEnded'] ?? false,
-      currentResponses: json['currentResponses'] ?? 0,
-      status: json['status'] ?? '진행중',
+          SurveyTargetConditions.fromJson(json['targetConditions']),
+      createdAt: DateTime.parse(json['createdAt']),
+      isEnded: json['isEnded'],
+      currentResponses: json['currentResponses'],
+      status: json['status'],
     );
   }
 
   Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
         'surveyTitle': surveyTitle,
         'surveyDescription': surveyDescription,
         'totalQuestions': totalQuestions,
@@ -75,13 +73,13 @@ class Survey {
         'status': status,
       };
 
-  // 설문이 마감되었는지 확인하는 getter
+  // getter 추가
   bool get isExpired {
     final deadline = createdAt.add(const Duration(days: 30));
     return DateTime.now().isAfter(deadline);
   }
 
-  // 목표 인원이 달성되었는지 확인하는 getter
+  // 목표 인원이 달성되었는지 확인하는 getter도 함께 추가
   bool get isTargetReached {
     return currentResponses >= targetNumber;
   }
@@ -147,4 +145,91 @@ class SurveyTargetConditions {
         'locations': locations,
         'occupations': occupations,
       };
+}
+
+// 포인트 내역을 위한 모델
+class PointHistory {
+  final String title;
+  final DateTime date;
+  final int points;
+  final String type; // 'earn' or 'use'
+
+  PointHistory({
+    required this.title,
+    required this.date,
+    required this.points,
+    required this.type,
+  });
+
+  factory PointHistory.fromJson(Map<String, dynamic> json) {
+    return PointHistory(
+      title: json['title'],
+      date: DateTime.parse(json['date']),
+      points: json['points'],
+      type: json['type'],
+    );
+  }
+}
+
+class SurveyStats {
+  final int surveyId;
+  final int currentResponses;
+  final int targetNumber;
+  final double responseRate;
+  final int expectedPoints;
+  final Map<String, int> responsesByAge;
+  final Map<String, int> responsesByGender;
+  final Map<String, int> responsesByLocation;
+  final List<QuestionStats> questionStats;
+
+  SurveyStats({
+    required this.surveyId,
+    required this.currentResponses,
+    required this.targetNumber,
+    required this.responseRate,
+    required this.expectedPoints,
+    required this.responsesByAge,
+    required this.responsesByGender,
+    required this.responsesByLocation,
+    required this.questionStats,
+  });
+
+  factory SurveyStats.fromJson(Map<String, dynamic> json) {
+    return SurveyStats(
+      surveyId: json['surveyId'],
+      currentResponses: json['currentResponses'],
+      targetNumber: json['targetNumber'],
+      responseRate: json['responseRate'].toDouble(),
+      expectedPoints: json['expectedPoints'],
+      responsesByAge: Map<String, int>.from(json['responsesByAge']),
+      responsesByGender: Map<String, int>.from(json['responsesByGender']),
+      responsesByLocation: Map<String, int>.from(json['responsesByLocation']),
+      questionStats: (json['questionStats'] as List)
+          .map((q) => QuestionStats.fromJson(q))
+          .toList(),
+    );
+  }
+}
+
+class QuestionStats {
+  final int questionId;
+  final String question;
+  final String type;
+  final Map<String, int> options;
+
+  QuestionStats({
+    required this.questionId,
+    required this.question,
+    required this.type,
+    required this.options,
+  });
+
+  factory QuestionStats.fromJson(Map<String, dynamic> json) {
+    return QuestionStats(
+      questionId: json['questionId'],
+      question: json['question'],
+      type: json['type'],
+      options: Map<String, int>.from(json['options']),
+    );
+  }
 }
