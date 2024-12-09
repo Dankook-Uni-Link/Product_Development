@@ -6,6 +6,7 @@ import 'package:app/screen/my_pointhistory_screen.dart';
 import 'package:app/screen/my_surveys_screen.dart';
 import 'package:app/screen/survey_screen.dart';
 import 'package:app/widget/bottomNavbar.dart';
+import 'package:app/widget/logout_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -166,6 +167,9 @@ class MyPageScreen extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
+        actions: const [
+          LogoutButton(), // 추가
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
