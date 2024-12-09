@@ -80,7 +80,7 @@ app.get("/signup", (req, res) => {
 });
 
 app.post("/signup", (req, res) => {
-  const { username, password, email, gender, birthdate } = req.body;
+  const { username, password, email, gender, birthdate, region, job} = req.body;
 
   // 새로운 유저 객체 생성
   const newUser = {
@@ -90,6 +90,8 @@ app.post("/signup", (req, res) => {
     email,
     gender,
     birthdate,
+    region,
+    job,
   };
   console.log(newUser);
 
