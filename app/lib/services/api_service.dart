@@ -71,6 +71,8 @@ class ApiService {
       'totalQuestions': questions.length,
       'reward': rewardPerPerson.toString(),
       'Target_number': targetNumber,
+      'winning_number': targetNumber, // 추가: 목표 인원과 동일하게 설정
+      'price': (rewardPerPerson * targetNumber).toString(), // 추가: 총 비용
       'targetConditions': targetConditions.toJson(),
       'questions': questions
           .map((q) => {
@@ -79,6 +81,10 @@ class ApiService {
                 'options': q.options,
               })
           .toList(),
+      'createdAt': DateTime.now().toIso8601String(),
+      'isEnded': false,
+      'currentResponses': 0,
+      'status': "진행중",
     };
 
     try {
@@ -89,7 +95,6 @@ class ApiService {
       );
 
       if (response.statusCode == 201) {
-        // 생성 성공
         return true;
       } else {
         throw Exception('Failed to create survey');

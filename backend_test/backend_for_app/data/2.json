@@ -1,0 +1,37 @@
+{
+  "surveyTitle": "ㅁㅁㅁㅇ",
+  "surveyDescription": "ㄹㅁㅇㄴㄹ",
+  "totalQuestions": 1,
+  "reward": "111",
+  "Target_number": 1,
+  "winning_number": 1,
+  "price": "111",
+  "targetConditions": {
+    "ageRanges": [
+      "10대"
+    ],
+    "genders": [
+      "남성"
+    ],
+    "locations": [
+      "서울"
+    ],
+    "occupations": [
+      "대학생"
+    ]
+  },
+  "questions": [
+    {
+      "question": "ㅁㄹㄹㅇㄹㅇ",
+      "type": "single_choice",
+      "options": [
+        "ㅇㅇㅇ",
+        "ㄴㄹㅁㅇ"
+      ]
+    }
+  ],
+  "createdAt": "2024-12-09T01:51:06.424104",
+  "isEnded": false,
+  "currentResponses": 0,
+  "status": "진행중"
+}

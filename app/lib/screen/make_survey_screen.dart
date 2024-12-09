@@ -564,14 +564,14 @@ class _MakeSurveyScreenState extends State<MakeSurveyScreen> {
                                 child: ElevatedButton(
                                   onPressed: () {
                                     setDialogState(() {
-                                      userPoints += 1000;
+                                      userPoints += 10000;
                                     });
                                     setState(() {
-                                      userPoints += 1000;
+                                      userPoints += 10000;
                                     });
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                        content: Text('1000P가 충전되었습니다.'),
+                                        content: Text('10000P가 충전되었습니다.'),
                                         backgroundColor: AppColors.third,
                                       ),
                                     );
@@ -579,7 +579,7 @@ class _MakeSurveyScreenState extends State<MakeSurveyScreen> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.green,
                                   ),
-                                  child: const Text('포인트 구매 (+1000P)'),
+                                  child: const Text('포인트 구매 (+10000P)'),
                                 ),
                               ),
                             ],
@@ -598,6 +598,7 @@ class _MakeSurveyScreenState extends State<MakeSurveyScreen> {
                                       try {
                                         final apiService = ApiService();
                                         final survey = Survey(
+                                          id: null, // 새로 만드는 설문이므로 null
                                           surveyTitle: _titleController.text,
                                           surveyDescription:
                                               _descriptionController.text,
@@ -619,20 +620,15 @@ class _MakeSurveyScreenState extends State<MakeSurveyScreen> {
                                           price: totalPoints.toString(),
                                           targetConditions:
                                               SurveyTargetConditions(
-                                            // targetConditions 추가
                                             ageRanges: _selectedAgeRanges,
                                             genders: _selectedGenders,
                                             locations: _selectedLocations,
                                             occupations: _selectedOccupations,
                                           ),
-                                          createdAt:
-                                              DateTime.now(), // 현재 시간으로 설정
-                                          isEnded:
-                                              false, // 새로 생성되는 설문은 항상 false
-                                          currentResponses:
-                                              0, // 새로 생성되는 설문은 응답자 0명으로 시작
-                                          status:
-                                              "진행중", // 새로 생성되는 설문은 항상 "진행중" 상태
+                                          createdAt: DateTime.now(), // 현재 시간
+                                          isEnded: false, // 새로 만드는 설문은 진행중
+                                          currentResponses: 0, // 응답자 0명으로 시작
+                                          status: "진행중", // 상태는 진행중으로 시작
                                         );
 
                                         await apiService.createSurvey(

@@ -1,0 +1,47 @@
+{
+  "surveyTitle": "김건희 특검법",
+  "surveyDescription": "ㅇㅁㄹㅁㅇㄴㄹ",
+  "totalQuestions": 2,
+  "reward": "100",
+  "Target_number": 100,
+  "winning_number": 100,
+  "price": "10000",
+  "targetConditions": {
+    "ageRanges": [
+      "20대"
+    ],
+    "genders": [
+      "남성",
+      "여성"
+    ],
+    "locations": [
+      "경기"
+    ],
+    "occupations": [
+      "대학생"
+    ]
+  },
+  "questions": [
+    {
+      "question": "찬반",
+      "type": "single_choice",
+      "options": [
+        "찬",
+        "반",
+        "모름"
+      ]
+    },
+    {
+      "question": "ㅁㅇㄴㄹㅁㄴㅇ",
+      "type": "multiple_choice",
+      "options": [
+        "ㅁㅇㄹㅁㄴㅇ",
+        "ㅁㄹㅁㄴㅇㄹ"
+      ]
+    }
+  ],
+  "createdAt": "2024-12-09T08:21:11.101776",
+  "isEnded": false,
+  "currentResponses": 0,
+  "status": "진행중"
+}
