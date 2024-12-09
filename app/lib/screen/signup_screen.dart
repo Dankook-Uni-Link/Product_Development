@@ -180,7 +180,7 @@ class _SignupScreenState extends State<SignupScreen> {
         // final loginData = result.data; // Login 객체 가져오기
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('회원가입이 성공적으로 완료되었습니다.')),
-        );      
+        );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const LoginScreen()),

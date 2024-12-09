@@ -122,10 +122,11 @@ class ApiService {
     }
   }
 
+
   // 설문조사 생성하기
   Future<Result> createSurvey(
     String title,
-    int totalQuestions,
+    String surveyExplain,
     String reward,
     String deadline,
   ) async {
@@ -136,9 +137,31 @@ class ApiService {
       },
       body: json.encode({
         'surveyTitle': title,
-        'totalQuestions': totalQuestions,
+        'surveyExplain': surveyExplain,
         'reward': reward,
         'deadline': deadline,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return Result(success: true, message: 'Survey created successfully');
+    } else {
+      return Result(success: false, message: 'Failed to create survey');
+    }
+  }
+
+  Future<Result> newcreateSurvey(
+    String surveyTitle,
+    List<String> surveyQuestions,
+  ) async {
+    final response = await http.post(
+      Uri.parse('https://your-api-url/create-survey'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'surveyTitle': surveyTitle,
+        'questions': surveyQuestions,
       }),
     );
 

@@ -24,6 +24,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:app/design/colors.dart';
 import 'package:app/services/api_service.dart';
+import 'package:app/screen/create_survey_screen.dart';
 
 class MakeSurveyScreen extends StatefulWidget {
   const MakeSurveyScreen({super.key});
@@ -36,7 +37,8 @@ class _SurveyCreateScreenState extends State<MakeSurveyScreen> {
   ApiService apiService = ApiService();
   final _formKey = GlobalKey<FormState>();
   String surveyTitle = '';
-  int totalQuestions = 1;
+  String surveyExplain = '';
+  // int totalQuestions = 1;
   String reward = '';
   String deadline = '';
   
@@ -85,26 +87,22 @@ class _SurveyCreateScreenState extends State<MakeSurveyScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // 총 문항 수 입력 필드
+                // 서베이 설명란
                 TextFormField(
                   decoration: InputDecoration(
-                    labelText: '총 문항 수',
+                    labelText: '서베이 설명',
                     border: OutlineInputBorder(),
                     filled: true,
                     fillColor: AppColors.secondary,
                   ),
-                  keyboardType: TextInputType.number,
                   onChanged: (value) {
                     setState(() {
-                      totalQuestions = int.tryParse(value) ?? 1;
+                      surveyExplain = value;
                     });
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return '문항 수를 입력해주세요.';
-                    }
-                    if (int.tryParse(value) == null) {
-                      return '올바른 문항 수를 입력해주세요.';
+                      return '설명란';
                     }
                     return null;
                   },
@@ -180,30 +178,37 @@ class _SurveyCreateScreenState extends State<MakeSurveyScreen> {
 
   // 서베이 생성 로직
   Future<void> _createSurvey() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        final result = await apiService.createSurvey(
-          surveyTitle,
-          totalQuestions,
-          reward,
-          deadline,
-        );
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('서베이가 성공적으로 생성되었습니다.')),
+    );
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const CreateSurveyScreen()),
+    );
+    // if (_formKey.currentState!.validate()) {
+    //   try {
+    //     final result = await apiService.createSurvey(
+    //       surveyTitle,
+    //       surveyExplain,
+    //       reward,
+    //       deadline,
+    //     );
 
-        if (result.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('서베이가 성공적으로 생성되었습니다.')),
-          );
-          Navigator.pop(context);  // 뒤로 가기
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('서베이 생성 실패: ${result.message}')),
-          );
-        }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('오류 발생: ${e.toString()}')),
-        );
-      }
-    }
+    //     if (result.success) {
+    //       ScaffoldMessenger.of(context).showSnackBar(
+    //         const SnackBar(content: Text('서베이가 성공적으로 생성되었습니다.')),
+    //       );
+    //       Navigator.pop(context);  // 뒤로 가기
+    //     } else {
+    //       ScaffoldMessenger.of(context).showSnackBar(
+    //         SnackBar(content: Text('서베이 생성 실패: ${result.message}')),
+    //       );
+    //     }
+    //   } catch (e) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('오류 발생: ${e.toString()}')),
+    //     );
+    //   }
+    // }
   }
 }
