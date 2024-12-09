@@ -15,6 +15,8 @@ class Login {
   final String email;
   final String gender;
   final String birthdate;
+  final String region;
+  final String job;
   // final String token; // 로그인 성공 시 받은 JWT 토큰
 
   // Login({required this.token});
@@ -25,6 +27,8 @@ class Login {
     required this.email,
     required this.gender,
     required this.birthdate,
+    required this.region,
+    required this.job,
   });
 
   // JSON 데이터를 객체로 변환
@@ -37,6 +41,8 @@ class Login {
       email: json['email'],
       gender: json['gender'],
       birthdate: json['birthdate'],
+      region: json['region'],
+      job: json['job'],
     );
   }
 }

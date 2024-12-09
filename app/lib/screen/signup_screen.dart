@@ -50,10 +50,11 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  // final TextEditingController _genderController = TextEditingController();
   String? _selectedGender; // 선택한 성별 저장
   final TextEditingController _birthdateController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();  
+  String? _selectedRegion;
+  String? _selectedJob;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _apiService = ApiService();
   // bool _isUsernameAvailable = true;  // 아이디 중복 검사 결과 저장
 
@@ -131,39 +132,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
     return null;
   }
-  // void _signup() async {
-  //   // 회원가입 로직 구현
-  //   if (_formKey.currentState!.validate()) {
-  //     String username = _usernameController.text;
-  //     String email = _emailController.text;
-  //     String password = _passwordController.text;
-  //     String gender = _genderController.text;
-  //     String birthdate = _birthdateController.text;
-
-  //     // 회원가입 API 호출
-  //     try {
-  //       final result = await _apiService.signup(username, email, password, gender, birthdate);
-  //       if(result['status'] == 'success'){
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           const SnackBar(content: Text('회원가입이 성공적으로 완료되었습니다.')),
-  //         );
-  //         // 회원가입 후 로그인 페이지로 이동
-  //         Navigator.pushReplacement(
-  //           context,
-  //           MaterialPageRoute(builder: (context) => const LoginScreen()),
-  //         );
-  //       } else {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           const SnackBar(content: Text('회원가입 실패. 다시 시도해주세요.')),
-  //         ); 
-  //       }
-  //     } catch (e) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(content: Text('서버에 연결할 수 없습니다.')),
-  //       );
-  //     }
-  //   }
-  // }
+  
 
   Future<void> _signup() async {
     if (_formKey.currentState!.validate()) { //&& _isUsernameAvailable // 아이디 중복X
@@ -172,9 +141,11 @@ class _SignupScreenState extends State<SignupScreen> {
       String password = _passwordController.text;
       String email = _emailController.text;
       String? gender = _selectedGender; // 선택된 성별
+      String? region = _selectedRegion; // 선택된 성별
+      String? job = _selectedJob; // 선택된 성별
       String birthdate = _birthdateController.text;
 
-      final result = await _apiService.signup(username, password, email, gender, birthdate);
+      final result = await _apiService.signup(username, password, email, gender, birthdate, region, job);
 
       if (result.success) { // 회원가입 성공 여부 확인 (success 필드 예시)
         // final loginData = result.data; // Login 객체 가져오기
@@ -326,25 +297,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         },
                   ),),],),
                 const SizedBox(height: 16),
-
-                // 성별 입력 필드
-                // Row(
-                //   children: [
-                //     Expanded(
-                //       child: TextFormField(
-                //         controller: _genderController,
-                //         keyboardType: TextInputType.text,
-                //         decoration: const InputDecoration(
-                //           labelText: 'Gender',
-                //           border: OutlineInputBorder(),
-                //         ),
-                //         validator: (value) {
-                //           if (value == null || value.isEmpty) {
-                //             return '성별을 입력해주세요.';
-                //           }
-                //           return null;
-                //         },
-                //   ),),],),
+                
                 Row(
                   children: [
                     Expanded(
@@ -405,6 +358,80 @@ class _SignupScreenState extends State<SignupScreen> {
                         //   }
                         //   return null;
                         // },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          labelText: 'Region',
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
+                        ),
+                        value: _selectedRegion,
+                        items: [
+                          const DropdownMenuItem(value: null, child: Text('선택하세요')),
+                          ...['서울', '경기', '인천', '강원', '충청', '전라', '경상', '제주', '기타'].map(
+                            (region) => DropdownMenuItem(
+                              value: region,
+                              child: Text(region),
+                            ),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          FocusScope.of(context).requestFocus(FocusNode()); // 키보드 숨김
+                          setState(() {
+                            _selectedRegion = value;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '지역을 선택해주세요.';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          labelText: 'Job',
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
+                        ),
+                        value: _selectedJob,
+                        items: [
+                          const DropdownMenuItem(value: null, child: Text('선택하세요')),
+                          ...['대학생', '직장인', '자영업자', '전문직', '주부', '무직', '기타'].map(
+                            (job) => DropdownMenuItem(
+                              value: job,
+                              child: Text(job),
+                            ),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          FocusScope.of(context).requestFocus(FocusNode()); // 키보드 숨김
+                          setState(() {
+                            _selectedJob = value;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '직업을 선택해주세요.';
+                          }
+                          return null;
+                        },
                       ),
                     ),
                   ],

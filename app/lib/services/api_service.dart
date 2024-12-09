@@ -38,7 +38,7 @@ class ApiService {
   }
 
   // 회원가입
-  Future<ApiResponse<Login>> signup(String username, String password, String email, String? gender, String birthdate) async {
+  Future<ApiResponse<Login>> signup(String username, String password, String email, String? gender, String birthdate, String? region, String? job) async {
     final url = Uri.parse('$baseUrl/signup');
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode({
@@ -47,6 +47,8 @@ class ApiService {
       'password': password,
       'gender': gender,
       'birthdate': birthdate,
+      'region': region,
+      'job': job,
     });
 
     final response = await http.post(url, headers: headers, body: body);
@@ -122,6 +124,15 @@ class ApiService {
     }
   }
 
+  // String? _selectRegion;
+  // String? _selectJob;
+
+/*
+나이대: 10 20 30 40 50 60대 이상
+성별: 남성 여성
+지역: 서울 경기 인천 강원 충청 전라 경상 제주
+직업: 대학생 직장인 자영업자 전문직 주부 무직 기타
+*/
   // 설문조사 생성하기
   Future<Result> createSurvey(
     String title,
