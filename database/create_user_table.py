@@ -1,7 +1,6 @@
 import json
-from connect_db import load_config, connect_to_database, close_connection
-from mysql.connector import Error
-
+from connect_db import load_config, connect_to_database
+import mysql.connector
 
 def execute_sql_from_file(connection, file_path):
     try:
@@ -26,7 +25,6 @@ def execute_sql_from_file(connection, file_path):
     finally:
         cursor.close()
 
-
 if __name__ == "__main__":
     # config.json에서 설정 불러오기
     config = load_config()
@@ -36,6 +34,4 @@ if __name__ == "__main__":
     
     if db_connection:
         execute_sql_from_file(db_connection, 'sql/user/create_user_table.sql')
-        
-        # 연결 종료
         close_connection(db_connection)

@@ -42,7 +42,7 @@ def main():
     if os.path.exists(file_path):
         with open(file_path, 'r', encoding='utf-8') as file:
             user_data_list = json.load(file)
-            
+        
             # 각 사용자 데이터를 삽입
             for user_data in user_data_list:
                 insert_user_data(connection, user_data)
