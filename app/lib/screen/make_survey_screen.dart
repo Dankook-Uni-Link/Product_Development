@@ -1,4 +1,5 @@
 import 'package:app/design/colors.dart';
+import 'package:app/models/question_model.dart';
 import 'package:app/models/survey_model.dart';
 import 'package:app/services/api_service.dart';
 import 'package:app/widget/bottomNavBar.dart';
@@ -14,15 +15,26 @@ class MakeSurveyScreen extends StatefulWidget {
 
 // 설문 문항 데이터 클래스
 class QuestionData {
-  String question;
-  String type;
+  String content;
+  QuestionType type;
   List<String> options;
+  int order;
 
   QuestionData({
-    required this.question,
+    required this.content,
     required this.type,
     required this.options,
+    required this.order,
   });
+
+  Question toQuestion() {
+    return Question(
+      content: content,
+      type: type,
+      options: options,
+      order: order,
+    );
+  }
 }
 
 class _MakeSurveyScreenState extends State<MakeSurveyScreen> {
@@ -598,47 +610,18 @@ class _MakeSurveyScreenState extends State<MakeSurveyScreen> {
                                       try {
                                         final apiService = ApiService();
                                         final survey = Survey(
-                                          id: null, // 새로 만드는 설문이므로 null
-                                          surveyTitle: _titleController.text,
-                                          surveyDescription:
-                                              _descriptionController.text,
-                                          totalQuestions: _questions.length,
-                                          reward: _rewardController.text,
-                                          targetNumber: int.parse(
-                                              _targetNumberController.text),
-                                          winningNumber: int.parse(
-                                              _targetNumberController.text),
-                                          questions: _questions
-                                              .map((questionData) => Question(
-                                                    question:
-                                                        questionData.question,
-                                                    type: questionData.type,
-                                                    options:
-                                                        questionData.options,
-                                                  ))
-                                              .toList(),
-                                          price: totalPoints.toString(),
-                                          targetConditions:
-                                              SurveyTargetConditions(
-                                            ageRanges: _selectedAgeRanges,
-                                            genders: _selectedGenders,
-                                            locations: _selectedLocations,
-                                            occupations: _selectedOccupations,
-                                          ),
-                                          createdAt: DateTime.now(), // 현재 시간
-                                          isEnded: false, // 새로 만드는 설문은 진행중
-                                          currentResponses: 0, // 응답자 0명으로 시작
-                                          status: "진행중", // 상태는 진행중으로 시작
-                                        );
-
-                                        await apiService.createSurvey(
+                                          creatorId:
+                                              1, // TODO: 실제 로그인한 사용자 ID로 변경 필요
                                           title: _titleController.text,
                                           description:
                                               _descriptionController.text,
-                                          targetNumber: int.parse(
-                                              _targetNumberController.text),
-                                          rewardPerPerson:
+                                          questions: _questions
+                                              .map((q) => q.toQuestion())
+                                              .toList(),
+                                          rewardAmount:
                                               int.parse(_rewardController.text),
+                                          targetResponses: int.parse(
+                                              _targetNumberController.text),
                                           targetConditions:
                                               SurveyTargetConditions(
                                             ageRanges: _selectedAgeRanges,
@@ -646,8 +629,14 @@ class _MakeSurveyScreenState extends State<MakeSurveyScreen> {
                                             locations: _selectedLocations,
                                             occupations: _selectedOccupations,
                                           ),
-                                          questions: _questions,
+                                          createdAt: DateTime.now(),
+                                          expiresAt: DateTime.now()
+                                              .add(const Duration(days: 30)),
+                                          status: SurveyStatus.active,
                                         );
+
+                                        // ApiService의 createSurvey 호출 부분도 수정 필요
+                                        await apiService.createSurvey(survey);
 
                                         setState(() {
                                           userPoints -= totalPoints;

@@ -1,120 +1,92 @@
+import 'package:app/models/question_model.dart';
+
 class Survey {
-  final int? id; // nullable로 변경
-  final String surveyTitle;
-  final String surveyDescription;
-  final int totalQuestions;
-  final String reward;
-  final int targetNumber;
-  final int winningNumber;
+  final int? id;
+  final int creatorId;
+  final String title;
+  final String description;
   final List<Question> questions;
-  final String price;
+  final int rewardAmount;
+  final int targetResponses;
   final SurveyTargetConditions targetConditions;
   final DateTime createdAt;
-  final bool isEnded;
-  final int currentResponses;
-  final String status;
+  final DateTime expiresAt;
+  final SurveyStatus status;
+  final int currentResponses; // 필드 추가
 
   Survey({
-    this.id, // required 제거
-    required this.surveyTitle,
-    required this.surveyDescription,
-    required this.totalQuestions,
-    required this.reward,
-    required this.targetNumber,
-    required this.winningNumber,
+    this.id,
+    required this.creatorId,
+    required this.title,
+    required this.description,
     required this.questions,
-    required this.price,
+    required this.rewardAmount,
+    required this.targetResponses,
     required this.targetConditions,
     required this.createdAt,
-    required this.isEnded,
-    required this.currentResponses,
+    required this.expiresAt,
     required this.status,
+    this.currentResponses = 0,
   });
 
-  factory Survey.fromJson(Map<String, dynamic> json) {
-    var questionsFromJson = json['questions'] as List;
-    List<Question> questionList = questionsFromJson
-        .map((question) => Question.fromJson(question))
-        .toList();
+  // 기존 코드와의 호환성을 위한 getter들
+  String get surveyTitle => title;
+  String get surveyDescription => description;
+  String get reward => rewardAmount.toString();
+  int get targetNumber => targetResponses;
+  bool get isEnded => status != SurveyStatus.active;
+  String get statusText => status == SurveyStatus.active ? "진행중" : "종료됨";
+  int get totalQuestions => questions.length;
 
+  // 유틸리티 메서드들
+  bool get isExpired => DateTime.now().isAfter(expiresAt);
+  bool get isTargetReached => currentResponses >= targetResponses;
+
+  double getProgress() {
+    if (targetResponses <= 0) return 0.0;
+    return (currentResponses / targetResponses).clamp(0.0, 1.0);
+  }
+
+  factory Survey.fromJson(Map<String, dynamic> json) {
     return Survey(
       id: json['id'],
-      surveyTitle: json['surveyTitle'],
-      surveyDescription: json['surveyDescription'],
-      totalQuestions: json['totalQuestions'],
-      reward: json['reward'],
-      targetNumber: json['Target_number'],
-      winningNumber: json['winning_number'],
-      price: json['price'],
-      questions: questionList,
+      creatorId: json['creatorId'],
+      title: json['title'],
+      description: json['description'],
+      questions:
+          (json['questions'] as List).map((q) => Question.fromJson(q)).toList(),
+      rewardAmount: json['rewardAmount'],
+      targetResponses: json['targetResponses'],
       targetConditions:
           SurveyTargetConditions.fromJson(json['targetConditions']),
       createdAt: DateTime.parse(json['createdAt']),
-      isEnded: json['isEnded'],
-      currentResponses: json['currentResponses'],
-      status: json['status'],
+      expiresAt: DateTime.parse(json['expiresAt']),
+      status: SurveyStatus.values
+          .firstWhere((e) => e.toString() == 'SurveyStatus.${json['status']}'),
+      currentResponses: json['currentResponses'] ?? 0,
     );
   }
 
   Map<String, dynamic> toJson() => {
         if (id != null) 'id': id,
-        'surveyTitle': surveyTitle,
-        'surveyDescription': surveyDescription,
-        'totalQuestions': totalQuestions,
-        'reward': reward,
-        'Target_number': targetNumber,
-        'winning_number': winningNumber,
-        'price': price,
+        'creatorId': creatorId,
+        'title': title,
+        'description': description,
         'questions': questions.map((q) => q.toJson()).toList(),
+        'rewardAmount': rewardAmount,
+        'targetResponses': targetResponses,
         'targetConditions': targetConditions.toJson(),
         'createdAt': createdAt.toIso8601String(),
-        'isEnded': isEnded,
+        'expiresAt': expiresAt.toIso8601String(),
+        'status': status.toString().split('.').last,
         'currentResponses': currentResponses,
-        'status': status,
       };
-
-  // getter 추가
-  bool get isExpired {
-    final deadline = createdAt.add(const Duration(days: 30));
-    return DateTime.now().isAfter(deadline);
-  }
-
-  // 목표 인원이 달성되었는지 확인하는 getter도 함께 추가
-  bool get isTargetReached {
-    return currentResponses >= targetNumber;
-  }
 }
 
-class Question {
-  final String question;
-  final String type;
-  final List<String> options;
-
-  Question({
-    required this.question,
-    required this.type,
-    required this.options,
-  });
-
-  factory Question.fromJson(Map<String, dynamic> json) {
-    var optionsFromJson = json['options'] as List;
-    List<String> optionsList =
-        optionsFromJson.map((option) => option.toString()).toList();
-
-    return Question(
-      question: json['question'],
-      type: json['type'],
-      options: optionsList,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'question': question,
-      'type': type,
-      'options': options,
-    };
-  }
+enum SurveyStatus {
+  active, // 진행중
+  completed, // 완료됨
+  cancelled // 취소됨
 }
 
 class SurveyTargetConditions {

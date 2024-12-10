@@ -203,21 +203,8 @@ class SurveyCard extends StatelessWidget {
   });
 
   String _getRemainingDays() {
-    final deadline = survey.createdAt.add(const Duration(days: 30));
-    final remaining = deadline.difference(DateTime.now()).inDays;
+    final remaining = survey.expiresAt.difference(DateTime.now()).inDays;
     return 'D-$remaining';
-  }
-
-  double _getProgress() {
-    print('currentResponses: ${survey.currentResponses}');
-    print('targetNumber: ${survey.targetNumber}');
-
-    // targetNumber가 0이면 0을 반환
-    if (survey.targetNumber <= 0) return 0.0;
-
-    // 진행률이 1을 넘지 않도록 제한
-    final progress = survey.currentResponses / survey.targetNumber;
-    return progress.clamp(0.0, 1.0); // 0~1 사이의 값으로 제한
   }
 
   Widget _buildChip(String label) {
@@ -258,7 +245,7 @@ class SurveyCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            survey.surveyTitle,
+                            survey.title,
                             style: const TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.w900,
@@ -277,7 +264,7 @@ class SurveyCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
-                              survey.status,
+                              survey.statusText,
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 12,
@@ -302,7 +289,7 @@ class SurveyCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 LinearProgressIndicator(
-                  value: _getProgress(),
+                  value: survey.getProgress(),
                   backgroundColor: Colors.grey[300],
                   valueColor:
                       const AlwaysStoppedAnimation<Color>(AppColors.third),
@@ -312,7 +299,7 @@ class SurveyCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '${survey.currentResponses}/${survey.targetNumber}명 참여',
+                      '${survey.currentResponses}/${survey.targetResponses}명 참여',
                       style: const TextStyle(color: AppColors.third),
                     ),
                     Text(
@@ -328,8 +315,8 @@ class SurveyCard extends StatelessWidget {
                   children: [
                     ...survey.targetConditions.ageRanges
                         .map((age) => _buildChip(age)),
-                    if (survey.targetConditions.genders.isNotEmpty)
-                      _buildChip(survey.targetConditions.genders.join('/')),
+                    ...survey.targetConditions.genders
+                        .map((gender) => _buildChip(gender)),
                     ...survey.targetConditions.locations
                         .map((loc) => _buildChip(loc)),
                   ],

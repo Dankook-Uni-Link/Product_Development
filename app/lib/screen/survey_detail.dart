@@ -3,21 +3,11 @@ import 'package:app/models/survey_model.dart';
 import 'package:flutter/material.dart';
 import 'survey_screen.dart';
 
+// survey_detail.dart
 class SurveyDetailScreen extends StatelessWidget {
   final Survey survey;
 
   const SurveyDetailScreen({super.key, required this.survey});
-
-  String _getRemainingDays() {
-    final deadline = survey.createdAt.add(const Duration(days: 30));
-    final remaining = deadline.difference(DateTime.now()).inDays;
-    return 'D-$remaining';
-  }
-
-  double _getProgress() {
-    if (survey.targetNumber <= 0) return 0.0;
-    return (survey.currentResponses / survey.targetNumber).clamp(0.0, 1.0);
-  }
 
   Widget _buildInfoCard(String title, Widget content) {
     return Container(
@@ -77,7 +67,7 @@ class SurveyDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          survey.surveyTitle,
+          survey.title,
           style: const TextStyle(
             color: Colors.black,
             fontSize: 20,
@@ -97,13 +87,12 @@ class SurveyDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 기본 정보
             _buildInfoCard(
               "설문 정보",
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(survey.surveyDescription),
+                  Text(survey.description),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -121,15 +110,13 @@ class SurveyDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
-
-            // 진행 상황
             _buildInfoCard(
               "진행 상황",
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   LinearProgressIndicator(
-                    value: _getProgress(),
+                    value: survey.getProgress(),
                     backgroundColor: Colors.grey[200],
                     valueColor:
                         const AlwaysStoppedAnimation<Color>(AppColors.third),
@@ -139,7 +126,7 @@ class SurveyDetailScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${survey.currentResponses}/${survey.targetNumber}명 참여',
+                        '${survey.currentResponses}/${survey.targetResponses}명 참여',
                         style: const TextStyle(color: AppColors.third),
                       ),
                       Container(
@@ -152,7 +139,9 @@ class SurveyDetailScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          _getRemainingDays(),
+                          survey.isExpired
+                              ? 'D-0'
+                              : 'D-${survey.expiresAt.difference(DateTime.now()).inDays}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -164,8 +153,6 @@ class SurveyDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
-
-            // 대상자 조건
             _buildInfoCard(
               "대상자 조건",
               Wrap(
@@ -183,19 +170,18 @@ class SurveyDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: 24),
-
-            // 참여하기 버튼
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => SurveyScreen(survey: survey),
-                    ),
-                  );
-                },
+                onPressed: survey.isEnded
+                    ? null
+                    : () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => SurveyScreen(survey: survey),
+                          ),
+                        );
+                      },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: AppColors.third,
