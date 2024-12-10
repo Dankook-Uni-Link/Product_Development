@@ -409,11 +409,14 @@ class _MakeSurveyScreenState extends State<MakeSurveyScreen> {
                             (controller) => controller.text.isNotEmpty)) {
                       this.setState(() {
                         _questions.add(QuestionData(
-                          question: _questionController.text,
-                          type: _selectedQuestionType,
+                          content: _questionController.text,
+                          type: _selectedQuestionType == 'single_choice'
+                              ? QuestionType.singleChoice
+                              : QuestionType.multipleChoice,
                           options: _optionControllers
                               .map((controller) => controller.text)
                               .toList(),
+                          order: _questions.length + 1,
                         ));
                       });
                       Navigator.of(context).pop();
@@ -495,7 +498,7 @@ class _MakeSurveyScreenState extends State<MakeSurveyScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Q${index + 1}. ${question.question}',
+                        'Q${index + 1}. ${question.content}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
@@ -605,8 +608,7 @@ class _MakeSurveyScreenState extends State<MakeSurveyScreen> {
                             ElevatedButton(
                               onPressed: userPoints >= totalPoints
                                   ? () async {
-                                      final currentContext =
-                                          context; // context를 지역 변수로 저장
+                                      final currentContext = context;
                                       try {
                                         final apiService = ApiService();
                                         final survey = Survey(
@@ -635,16 +637,14 @@ class _MakeSurveyScreenState extends State<MakeSurveyScreen> {
                                           status: SurveyStatus.active,
                                         );
 
-                                        // ApiService의 createSurvey 호출 부분도 수정 필요
                                         await apiService.createSurvey(survey);
 
                                         setState(() {
                                           userPoints -= totalPoints;
                                         });
 
-                                        if (!mounted) {
-                                          return; // 위젯이 여전히 존재하는지 확인
-                                        }
+                                        if (!mounted) return;
+
                                         Navigator.pop(currentContext);
                                         ScaffoldMessenger.of(currentContext)
                                             .showSnackBar(
@@ -806,7 +806,7 @@ class _MakeSurveyScreenState extends State<MakeSurveyScreen> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                question.question,
+                                question.content,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,

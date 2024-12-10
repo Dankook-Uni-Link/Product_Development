@@ -1,4 +1,5 @@
 import 'package:app/services/auth_service.dart';
+import 'package:app/services/token_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -60,7 +61,12 @@ class _LoginScreenState extends State<LoginScreen> {
           _emailController.text,
           _passwordController.text,
         );
-        // TODO: 토큰 저장 및 홈 화면으로 이동
+        //토큰 저장 및 홈 화면으로 이동
+        await TokenService.saveToken(token); // 토큰 저장
+
+        if (!mounted) return;
+
+        Navigator.pushReplacementNamed(context, '/home'); // 홈 화면으로 이동
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('로그인 실패: $e')),

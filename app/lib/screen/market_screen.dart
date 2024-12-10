@@ -163,7 +163,7 @@ class _MarketScreenState extends State<MarketScreen> {
                                 reward: item.reward,
                                 deadline: 'D-7',
                                 imageUrl: 'assets/sell2.jpg',
-                                price: item.price,
+                                price: '5000',
                                 onTap: () {
                                   Navigator.push(
                                     context,

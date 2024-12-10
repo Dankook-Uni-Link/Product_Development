@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const app = express();
 const port = 3000;
+const users = new Map(); // 사용자 정보를 저장하는 Map
 
 // POST 요청의 body를 파싱하기 위한 미들웨어 추가
 app.use(express.json());
@@ -47,18 +48,6 @@ function saveSurvey(surveyData) {
   return newId;
 }
 
-// POST 요청 처리 추가
-app.post("/surveys", (req, res) => {
-  try {
-    const surveyData = req.body;
-    const newId = saveSurvey(surveyData);
-    res.status(201).json({ id: newId, message: "Survey created successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Failed to create survey");
-  }
-});
-
 // 뷰 엔진 설정
 app.set("view engine", "ejs");
 app.set("survey", "./survey");
@@ -75,6 +64,18 @@ app.get("/surveys", (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Failed to load surveys");
+  }
+});
+
+// POST 요청 처리 추가
+app.post("/surveys", (req, res) => {
+  try {
+    const surveyData = req.body;
+    const newId = saveSurvey(surveyData);
+    res.status(201).json({ id: newId, message: "Survey created successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Failed to create survey");
   }
 });
 
@@ -133,6 +134,51 @@ app.get("/survey/:id/stats", (req, res) => {
   } catch (error) {
     res.status(500).send("Failed to load survey statistics");
   }
+});
+
+// 회원가입 엔드포인트
+app.post("/auth/signup", (req, res) => {
+  const { email, password, name, birthDate, gender, location, occupation } =
+    req.body;
+
+  if (users.has(email)) {
+    return res.status(400).json({ message: "이미 존재하는 이메일입니다." });
+  }
+
+  const user = {
+    id: users.size + 1,
+    email,
+    password, // 실제로는 암호화 필요
+    name,
+    birthDate,
+    gender,
+    location,
+    occupation,
+    createdAt: new Date(),
+  };
+
+  users.set(email, user);
+  res.status(201).json({ ...user, password: undefined });
+});
+
+// 로그인 엔드포인트
+app.post("/auth/login", (req, res) => {
+  const { email, password } = req.body;
+  console.log("Login attempt:", { email, password });
+  console.log("Current users:", users); // users Map의 현재 상태 확인
+
+  const user = users.get(email);
+  console.log("Found user:", user);
+
+  if (!user || user.password !== password) {
+    return res
+      .status(401)
+      .json({ message: "이메일 또는 비밀번호가 일치하지 않습니다." });
+  }
+
+  // JWT 토큰 대신 임시로 간단한 토큰 사용
+  const token = Buffer.from(email).toString("base64");
+  res.json({ token, user: { ...user, password: undefined } });
 });
 
 app.listen(port);

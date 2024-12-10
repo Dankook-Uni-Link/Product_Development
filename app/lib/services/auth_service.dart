@@ -23,9 +23,10 @@ class AuthService {
         'email': email,
         'password': password,
         'name': name,
-        'birth_date': birthDate.toIso8601String(),
+        'birthDate': birthDate.toIso8601String(),
         'gender': gender,
         'location': location,
+        'occupation': occupation,
       }),
     );
     if (response.statusCode == 201) {
@@ -35,18 +36,26 @@ class AuthService {
   }
 
   Future<String> login(String email, String password) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/login'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-      }),
-    );
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body)['token'];
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+      );
+      print('Login response status: ${response.statusCode}');
+      print('Login response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body)['token'];
+      }
+      throw Exception('Failed to login');
+    } catch (e) {
+      print('Login error: $e');
+      rethrow;
     }
-    throw Exception('Failed to login');
   }
 
   Future<void> logout() async {

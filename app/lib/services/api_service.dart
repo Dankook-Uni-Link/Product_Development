@@ -1,12 +1,60 @@
 import 'package:app/models/gifticon_model.dart';
 import 'package:app/models/survey_model.dart';
-import 'package:app/screen/make_survey_screen.dart';
+import 'package:app/models/user_model.dart';
+import 'package:app/services/token_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ApiService {
   final String baseUrl =
       "http://10.0.2.2:3000"; // 일반적으로 Android 에뮬레이터에서는 10.0.2.2를 로컬 호스트 주소로 사용한다.
+
+  // api_service.dart에 추가
+  Future<User> signUp({
+    required String email,
+    required String password,
+    required String name,
+    required DateTime birthDate,
+    required String gender,
+    required String location,
+    required String occupation,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/signup'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'password': password,
+        'name': name,
+        'birthDate': birthDate.toIso8601String(),
+        'gender': gender,
+        'location': location,
+        'occupation': occupation,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      return User.fromJson(jsonDecode(response.body));
+    }
+    throw Exception('Failed to sign up');
+  }
+
+  Future<String> login(String email, String password) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/login'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'password': password,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['token'];
+    }
+    throw Exception('Failed to login');
+  }
 
   Future<List<Survey>> getSurveyList() async {
     try {
@@ -42,6 +90,14 @@ class ApiService {
     }
   }
 
+  Future<Map<String, String>> _getHeaders() async {
+    final token = await TokenService.getToken();
+    return {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+  }
+
 // 기프티콘 데이터를 가져오는 메서드 추가
   Future<List<Gifticon>> getGifticonList() async {
     final url = Uri.parse('$baseUrl/gifticons'); // 기프티콘 목록을 가져오는 엔드포인트
@@ -55,53 +111,15 @@ class ApiService {
     }
   }
 
-  Future<bool> createSurvey({
-    required String title,
-    required String description,
-    required int targetNumber,
-    required int rewardPerPerson,
-    required SurveyTargetConditions targetConditions,
-    required List<QuestionData> questions,
-  }) async {
-    final url = Uri.parse('$baseUrl/surveys');
+// services/api_service.dart
+  Future<Survey> createSurvey(Survey survey) async {
+    final response = await http.post(Uri.parse('$baseUrl/surveys'),
+        headers: await _getHeaders(), body: jsonEncode(survey.toJson()));
 
-    final surveyData = {
-      'surveyTitle': title,
-      'surveyDescription': description,
-      'totalQuestions': questions.length,
-      'reward': rewardPerPerson.toString(),
-      'Target_number': targetNumber,
-      'winning_number': targetNumber, // 추가: 목표 인원과 동일하게 설정
-      'price': (rewardPerPerson * targetNumber).toString(), // 추가: 총 비용
-      'targetConditions': targetConditions.toJson(),
-      'questions': questions
-          .map((q) => {
-                'question': q.question,
-                'type': q.type,
-                'options': q.options,
-              })
-          .toList(),
-      'createdAt': DateTime.now().toIso8601String(),
-      'isEnded': false,
-      'currentResponses': 0,
-      'status': "진행중",
-    };
-
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(surveyData),
-      );
-
-      if (response.statusCode == 201) {
-        return true;
-      } else {
-        throw Exception('Failed to create survey');
-      }
-    } catch (e) {
-      throw Exception('Error: $e');
+    if (response.statusCode == 201) {
+      return Survey.fromJson(jsonDecode(response.body));
     }
+    throw Exception('Failed to create survey');
   }
 
   Future<List<PointHistory>> getPointHistory() async {
