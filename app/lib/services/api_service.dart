@@ -8,7 +8,7 @@ import 'dart:convert';
 
 class ApiService {
   final String baseUrl =
-      "http://10.0.2.2:3000"; // 일반적으로 Android 에뮬레이터에서는 10.0.2.2를 로컬 호스트 주소로 사용한다.
+      "http://localhost:3000"; // 10.0.2.2 대신 localhost 사용 // 애뮬레이터는 10.0.2.2
 
   // api_service.dart에 추가
   Future<User> signUp({
