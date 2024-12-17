@@ -1,7 +1,10 @@
 import 'package:app/design/colors.dart';
 import 'package:app/models/question_model.dart';
 import 'package:app/models/survey_model.dart';
+import 'package:app/provider/user_provider.dart';
+import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'home_screen.dart';
 
 // survey_screen.dart
@@ -30,9 +33,42 @@ class _SurveyScreenState extends State<SurveyScreen> {
     });
   }
 
-  void selectEmoji(String emoji) {
+  void selectEmoji(String emoji) async {
     setState(() {
       selectedEmoji = emoji;
+    });
+
+    try {
+      // null 체크
+      final surveyId = widget.survey.id;
+      if (surveyId == null) {
+        throw Exception('Survey ID is missing');
+      }
+
+      final userId =
+          Provider.of<UserProvider>(context, listen: false).currentUser?.id;
+      if (userId == null) {
+        throw Exception('User is not logged in');
+      }
+
+      // 응답 데이터 형식 변환
+      final formattedResponses = selectedOptions.map(
+        (questionId, answers) => MapEntry(
+          questionId.toString(),
+          answers.map((answer) => answer.toString()).toList(),
+        ),
+      );
+
+      print('Formatted responses: $formattedResponses'); // 디버깅용
+
+      await ApiService().participateInSurvey(
+        surveyId,
+        userId,
+        formattedResponses,
+      );
+
+      if (!mounted) return;
+
       Future.delayed(const Duration(seconds: 2), () {
         showDialog(
           context: context,
@@ -46,8 +82,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
                   onPressed: () {
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
-                        builder: (context) => const HomeScreen(),
-                      ),
+                          builder: (context) => const HomeScreen()),
                       (route) => false,
                     );
                   },
@@ -57,7 +92,13 @@ class _SurveyScreenState extends State<SurveyScreen> {
           },
         );
       });
-    });
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('설문 제출 중 오류가 발생했습니다: $e')),
+      );
+    }
   }
 
   @override

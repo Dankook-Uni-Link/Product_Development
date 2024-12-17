@@ -1,0 +1,14 @@
+{
+  "created_surveys": [],
+  "participated_surveys": [
+    {
+      "surveyId": 1,
+      "participatedAt": "2024-12-17T00:55:28.129Z",
+      "responses": {
+        "0": [
+          "cv"
+        ]
+      }
+    }
+  ]
+}

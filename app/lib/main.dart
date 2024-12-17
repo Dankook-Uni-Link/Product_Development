@@ -1,15 +1,23 @@
 import 'package:app/auth/login_screen.dart';
 import 'package:app/auth/signup_screen.dart';
 import 'package:app/design/colors.dart';
+import 'package:app/provider/user_provider.dart';
 import 'package:app/screen/home_screen.dart';
-import 'package:app/screen/make_survey_screen.dart';
-import 'package:app/screen/my_page.dart';
+import 'package:app/screen/intro_screen.dart';
 import 'package:app/screen/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 // main.dart 수정
 void main() {
-  runApp(const MainApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+      ],
+      child: const MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -25,12 +33,12 @@ class MainApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const SplashScreen(),
+        '/': (context) => const IntroScreen(),
+        '/splash': (context) => const SplashScreen(),
+        '/intro': (context) => const IntroScreen(),
         '/login': (context) => const LoginScreen(),
         '/signup': (context) => const SignUpScreen(),
         '/home': (context) => const HomeScreen(),
-        '/mypage': (context) => const MyPageScreen(),
-        '/makesurvey': (context) => const MakeSurveyScreen(),
       },
     );
   }

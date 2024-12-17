@@ -1,13 +1,18 @@
 import 'package:app/design/colors.dart';
 import 'package:app/models/survey_model.dart';
+import 'package:app/provider/user_provider.dart';
 import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MyParticipationScreen extends StatelessWidget {
   const MyParticipationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final userId =
+        Provider.of<UserProvider>(context, listen: false).currentUser!.id;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -26,8 +31,8 @@ class MyParticipationScreen extends StatelessWidget {
         ),
       ),
       body: FutureBuilder<List<Survey>>(
-        future:
-            ApiService().getSurveyList(), // TODO: getMyParticipations API 구현 필요
+        // getSurveyList 대신 getParticipatedSurveys 사용
+        future: ApiService().getParticipatedSurveys(userId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -51,7 +56,7 @@ class MyParticipationScreen extends StatelessWidget {
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(16),
                   title: Text(
-                    survey.surveyTitle,
+                    survey.title,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -70,7 +75,7 @@ class MyParticipationScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '획득 포인트: ${survey.reward}P',
+                            '획득 포인트: ${survey.rewardAmount}P',
                             style: const TextStyle(
                               color: AppColors.third,
                               fontWeight: FontWeight.bold,
@@ -86,7 +91,7 @@ class MyParticipationScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Text(
-                              '리워드 수령 완료', // 또는 '리워드 대기중'
+                              '리워드 수령 완료',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: AppColors.third,

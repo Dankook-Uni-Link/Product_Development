@@ -35,27 +35,22 @@ class AuthService {
     throw Exception('Failed to sign up');
   }
 
-  Future<String> login(String email, String password) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/login'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': email,
-          'password': password,
-        }),
-      );
-      print('Login response status: ${response.statusCode}');
-      print('Login response body: ${response.body}');
+  // auth_service.dart
+  Future<Map<String, dynamic>> login(String email, String password) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/login'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'password': password,
+      }),
+    );
 
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body)['token'];
-      }
-      throw Exception('Failed to login');
-    } catch (e) {
-      print('Login error: $e');
-      rethrow;
+    if (response.statusCode == 200) {
+      return jsonDecode(
+          response.body); // {'token': String, 'user': Map<String, dynamic>}
     }
+    throw Exception('Failed to login');
   }
 
   Future<void> logout() async {

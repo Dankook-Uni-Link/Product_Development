@@ -1,0 +1,11 @@
+{
+  "id": 1,
+  "email": "bb",
+  "password": "bb",
+  "name": "bb",
+  "birthDate": "2024-12-02T00:00:00.000",
+  "gender": "남성",
+  "location": "경기",
+  "occupation": "학생",
+  "createdAt": "2024-12-16T14:33:03.901Z"
+}

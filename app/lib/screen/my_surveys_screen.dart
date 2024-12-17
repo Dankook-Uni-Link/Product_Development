@@ -1,8 +1,10 @@
 import 'package:app/design/colors.dart';
 import 'package:app/models/survey_model.dart';
+import 'package:app/provider/user_provider.dart';
 import 'package:app/screen/my_surveyState_screen.dart';
 import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MySurveysScreen extends StatefulWidget {
   const MySurveysScreen({super.key});
@@ -69,22 +71,20 @@ class _MySurveysScreenState extends State<MySurveysScreen>
 
   Widget _buildSurveyList({required bool isActive}) {
     return FutureBuilder<List<Survey>>(
-      future: apiService.getSurveyList(), // TODO: getMySurveys API 만들기
+      // getSurveyList 대신 getUserSurveys 사용
+      future: apiService.getUserSurveys(
+          Provider.of<UserProvider>(context, listen: false).currentUser!.id),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
-          );
+          return Center(child: Text('Error: ${snapshot.error}'));
         }
 
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(
-            child: Text('작성한 설문이 없습니다.'),
-          );
+          return const Center(child: Text('작성한 설문이 없습니다.'));
         }
 
         // 진행중/종료된 설문 필터링

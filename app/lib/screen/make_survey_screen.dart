@@ -1,10 +1,12 @@
 import 'package:app/design/colors.dart';
 import 'package:app/models/question_model.dart';
 import 'package:app/models/survey_model.dart';
+import 'package:app/provider/user_provider.dart';
 import 'package:app/services/api_service.dart';
 import 'package:app/widget/bottomNavBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class MakeSurveyScreen extends StatefulWidget {
   const MakeSurveyScreen({super.key});
@@ -612,8 +614,11 @@ class _MakeSurveyScreenState extends State<MakeSurveyScreen> {
                                       try {
                                         final apiService = ApiService();
                                         final survey = Survey(
-                                          creatorId:
-                                              1, // TODO: 실제 로그인한 사용자 ID로 변경 필요
+                                          creatorId: Provider.of<UserProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .currentUser!
+                                              .id,
                                           title: _titleController.text,
                                           description:
                                               _descriptionController.text,
