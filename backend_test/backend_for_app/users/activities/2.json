@@ -1,12 +1,46 @@
 {
-  "created_surveys": [],
-  "participated_surveys": [
+  "created_surveys": [
     {
       "surveyId": 1,
-      "participatedAt": "2024-12-17T00:55:28.129Z",
+      "createdAt": "2024-12-17T02:49:15.384Z"
+    },
+    {
+      "surveyId": 3,
+      "createdAt": "2024-12-17T03:05:42.417Z"
+    }
+  ],
+  "participated_surveys": [
+    {
+      "surveyId": 2,
+      "participatedAt": "2024-12-17T03:04:57.843Z",
       "responses": {
         "0": [
-          "cv"
+          "1"
+        ]
+      }
+    },
+    {
+      "surveyId": 5,
+      "participatedAt": "2024-12-17T04:28:51.565Z",
+      "responses": {
+        "0": [
+          "c"
+        ],
+        "1": [
+          "s",
+          "c"
+        ]
+      }
+    },
+    {
+      "surveyId": 6,
+      "participatedAt": "2024-12-17T04:31:36.151Z",
+      "responses": {
+        "0": [
+          "d"
+        ],
+        "1": [
+          "d"
         ]
       }
     }

@@ -1,0 +1,28 @@
+{
+  "created_surveys": [
+    {
+      "surveyId": 5,
+      "createdAt": "2024-12-17T04:27:25.227Z"
+    },
+    {
+      "surveyId": 6,
+      "createdAt": "2024-12-17T04:31:11.898Z"
+    }
+  ],
+  "participated_surveys": [
+    {
+      "surveyId": 6,
+      "participatedAt": "2024-12-17T04:32:55.826Z",
+      "responses": {
+        "0": [
+          "s"
+        ],
+        "1": [
+          "a",
+          "a",
+          "v"
+        ]
+      }
+    }
+  ]
+}

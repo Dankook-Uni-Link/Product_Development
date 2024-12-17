@@ -1,10 +1,10 @@
 {
-  "creatorId": 2,
-  "title": "a",
-  "description": "a",
+  "creatorId": 1,
+  "title": "bbbb",
+  "description": "bb",
   "questions": [
     {
-      "content": "1",
+      "content": "bbbb",
       "type": "singleChoice",
       "options": [
         "1",
@@ -17,21 +17,19 @@
   "targetResponses": 2,
   "targetConditions": {
     "ageRanges": [
-      "10대"
+      "30대"
     ],
-    "genders": [
-      "남성"
-    ],
+    "genders": [],
     "locations": [
-      "서울"
+      "인천"
     ],
     "occupations": [
-      "대학생"
+      "자영업자"
     ]
   },
-  "createdAt": "2024-12-17T02:49:14.471930",
-  "expiresAt": "2025-01-16T02:49:14.471960",
+  "createdAt": "2024-12-17T03:04:39.548307",
+  "expiresAt": "2025-01-16T03:04:39.548340",
   "status": "active",
   "currentResponses": 1,
-  "id": 1
+  "id": 2
 }

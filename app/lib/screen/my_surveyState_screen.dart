@@ -1,4 +1,5 @@
 import 'package:app/design/colors.dart';
+import 'package:app/models/question_model.dart';
 import 'package:app/models/survey_model.dart';
 import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
@@ -11,39 +12,6 @@ class SurveyStatsScreen extends StatelessWidget {
     super.key,
     required this.survey,
   });
-
-  List<PieChartSectionData> _createPieChartSections(QuestionStats qStats) {
-    final colors = [
-      Colors.blue,
-      Colors.green,
-      Colors.orange,
-      Colors.purple,
-      Colors.red,
-    ];
-
-    // Calculate total responses for percentage calculation
-    final totalResponses =
-        qStats.responses.values.fold<int>(0, (prev, value) => prev + value);
-
-    return qStats.responses.entries.map((entry) {
-      final index = qStats.responses.keys.toList().indexOf(entry.key);
-      final value = entry.value;
-      final percentage = (value / totalResponses) * 100;
-
-      return PieChartSectionData(
-        color: colors[index % colors.length],
-        value: value.toDouble(),
-        title: '${percentage.toStringAsFixed(1)}%',
-        radius: 100,
-        titleStyle: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-        titlePositionPercentageOffset: 0.5,
-      );
-    }).toList();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -217,117 +185,61 @@ class SurveyStatsScreen extends StatelessWidget {
             .map((entry) => _buildQuestionCard(
                   questionId: entry.key,
                   stats: entry.value,
+                  survey: survey, // survey 전달
                 ))
             .toList(),
       ],
     );
   }
 
-//   Widget _buildQuestionCard(QuestionStats qStats) {
-//   return Card(
-//     margin: const EdgeInsets.only(bottom: 16),
-//     child: Padding(
-//       padding: const EdgeInsets.all(16),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Text(
-//             qStats.question,
-//             style: const TextStyle(
-//               fontSize: 16,
-//               fontWeight: FontWeight.bold,
-//             ),
-//           ),
-//           const SizedBox(height: 16),
-//           if (qStats.type == 'single_choice')
-//             SizedBox(
-//               height: 300,
-//               child: PieChart(
-//                 PieChartData(
-//                   sectionsSpace: 0,
-//                   centerSpaceRadius: 40,
-//                   sections: _createPieSections(qStats.responses),
-//                 ),
-//               ),
-//             )
-//           else
-//             SizedBox(
-//               height: 300,
-//               child: BarChart(
-//                 BarChartData(
-//                   maxY: qStats.responses.values
-//                       .reduce((max, value) => max > value ? max : value)
-//                       .toDouble(),
-//                   barGroups: _createBarGroups(qStats.responses),
-//                   titlesData: FlTitlesData(
-//                     bottomTitles: AxisTitles(
-//                       sideTitles: SideTitles(
-//                         showTitles: true,
-//                         getTitlesWidget: (value, meta) {
-//                           if (value.toInt() >= qStats.responses.keys.length) {
-//                             return const SizedBox.shrink();
-//                           }
-//                           return Padding(
-//                             padding: const EdgeInsets.only(top: 8.0),
-//                             child: Text(
-//                               qStats.responses.keys.elementAt(value.toInt()),
-//                               style: const TextStyle(fontSize: 12),
-//                             ),
-//                           );
-//                         },
-//                         reservedSize: 40,
-//                       ),
-//                     ),
-//                     leftTitles: AxisTitles(
-//                       sideTitles: SideTitles(
-//                         showTitles: true,
-//                         reservedSize: 40,
-//                         getTitlesWidget: (value, meta) {
-//                           return Text(
-//                             value.toInt().toString(),
-//                             style: const TextStyle(fontSize: 12),
-//                           );
-//                         },
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//             ),
-//         ],
-//       ),
-//     ),
-//   );
-// }
+  Widget _buildQuestionCard(
+      {required String questionId,
+      required QuestionStats stats,
+      required Survey survey}) {
+    // questionId가 "0"부터 시작하는지 "1"부터 시작하는지 확인
+    print('QuestionId (raw): $questionId');
+    print('All questions:');
+    for (var q in survey.questions) {
+      print('Order: ${q.order}, Type: ${q.type}, Content: ${q.content}');
+    }
 
-  Widget _buildQuestionCard({
-    required String questionId,
-    required QuestionStats stats,
-  }) {
+    // questionId를 인덱스로 사용하여 질문 찾기 (0-based)
+    final questionIndex = int.parse(questionId);
+    final question = questionIndex < survey.questions.length
+        ? survey.questions[questionIndex]
+        : Question(
+            content: 'Unknown Question',
+            type: QuestionType.singleChoice,
+            options: [],
+            order: questionIndex,
+          );
+
+    print(
+        'Selected question - Index: $questionIndex, Type: ${question.type}, Content: ${question.content}');
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Question $questionId',
+              question.content,
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 16),
-            SizedBox(
-              height: 300,
-              child: PieChart(
-                PieChartData(
-                  sectionsSpace: 0,
-                  centerSpaceRadius: 40,
-                  sections: _createPieSections(stats.responses),
-                ),
-              ),
+            Container(
+              height: 250, // 차트 높이 조정
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: _buildChart(question.type, stats),
             ),
           ],
         ),
@@ -335,95 +247,92 @@ class SurveyStatsScreen extends StatelessWidget {
     );
   }
 
-// List<PieChartSectionData> _createPieSections(Map<String, int> responses) {
-//   final total = responses.values.reduce((sum, value) => sum + value);
-//   final colors = [
-//     Colors.blue.shade700,
-//     Colors.green,
-//     Colors.orange,
-//     Colors.purple,
-//     Colors.red,
-//     Colors.teal,
-//     Colors.pink,
-//     Colors.indigo,
-//   ];
-
-//   return responses.entries.map((entry) {
-//     final index = responses.keys.toList().indexOf(entry.key);
-//     final percentage = (entry.value / total * 100).toStringAsFixed(1);
-
-//     return PieChartSectionData(
-//       color: colors[index % colors.length],
-//       value: entry.value.toDouble(),
-//       title: '',
-//       radius: 50,
-//       badgeWidget: Container(
-//         padding: const EdgeInsets.all(4),
-//         decoration: BoxDecoration(
-//           color: colors[index % colors.length].withOpacity(0.8),
-//           borderRadius: BorderRadius.circular(4),
-//         ),
-//         child: Text(
-//           '${entry.key}\n$percentage%\n(${entry.value}명)',
-//           textAlign: TextAlign.center,
-//           style: const TextStyle(
-//             color: Colors.white,
-//             fontSize: 12,
-//             fontWeight: FontWeight.bold,
-//           ),
-//         ),
-//       ),
-//       badgePositionPercentageOffset: 1.5,
-//     );
-//   }).toList();
-// }
-
-  List<PieChartSectionData> _createPieSections(Map<String, int> responses) {
-    final total = responses.values.reduce((sum, value) => sum + value);
-    final colors = [
-      Colors.blue.shade700,
-      Colors.green,
-      Colors.orange,
-      Colors.purple,
-      Colors.red,
-      Colors.teal,
-      Colors.pink,
-      Colors.indigo,
-    ];
-
-    return responses.entries.map((entry) {
-      final index = responses.keys.toList().indexOf(entry.key);
-      final percentage = (entry.value / total * 100).toStringAsFixed(1);
-
-      return PieChartSectionData(
-        color: colors[index % colors.length],
-        value: entry.value.toDouble(),
-        title: '',
-        radius: 50,
-        badgeWidget: Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: colors[index % colors.length].withOpacity(0.8),
-            borderRadius: BorderRadius.circular(4),
+  Widget _buildChart(QuestionType type, QuestionStats stats) {
+    if (type == QuestionType.singleChoice) {
+      return PieChart(
+        PieChartData(
+          sectionsSpace: 3,
+          centerSpaceRadius: 30,
+          sections: _createPieChartSections(stats),
+          pieTouchData: PieTouchData(enabled: true),
+        ),
+      );
+    } else {
+      return BarChart(
+        BarChartData(
+          maxY: stats.responses.values
+                  .reduce((max, value) => max > value ? max : value)
+                  .toDouble() *
+              1.2,
+          barGroups: _createBarGroups(stats.responses),
+          gridData: FlGridData(
+            show: true,
+            drawVerticalLine: false,
+            horizontalInterval: 1,
+            getDrawingHorizontalLine: (value) {
+              return FlLine(
+                color: Colors.grey.shade300,
+                strokeWidth: 1,
+                dashArray: const [5, 5],
+              );
+            },
           ),
-          child: Text(
-            '${entry.key}\n$percentage%\n(${entry.value}명)',
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
+          // 바 터치 효과 제거
+          barTouchData: BarTouchData(
+            enabled: true,
+          ),
+          // 세로축 숫자 간격 조정
+          titlesData: FlTitlesData(
+            topTitles:
+                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles:
+                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: (value, meta) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      stats.responses.keys.elementAt(value.toInt()),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  );
+                },
+                reservedSize: 32,
+              ),
+            ),
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: 40,
+                interval: 1.0, // 간격을 1로 설정
+                getTitlesWidget: (value, meta) {
+                  // 정수값만 표시
+                  if (value == value.roundToDouble()) {
+                    return Text(
+                      value.toInt().toString(),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey,
+                      ),
+                    );
+                  }
+                  return const SizedBox();
+                },
+              ),
             ),
           ),
         ),
-        badgePositionPercentageOffset: 1.5,
       );
-    }).toList();
+    }
   }
 
   List<BarChartGroupData> _createBarGroups(Map<String, int> responses) {
-    final colors = [Colors.blue.shade700];
-
     return responses.entries.map((entry) {
       final index = responses.keys.toList().indexOf(entry.key);
       return BarChartGroupData(
@@ -431,11 +340,74 @@ class SurveyStatsScreen extends StatelessWidget {
         barRods: [
           BarChartRodData(
             toY: entry.value.toDouble(),
-            color: colors[0],
-            width: 20,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+            width: 30,
+            color: const Color(0xFF5C6BC0),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
+            backDrawRodData: BackgroundBarChartRodData(
+              show: true,
+              toY: responses.values
+                  .reduce((max, value) => max > value ? max : value)
+                  .toDouble(),
+              color: Colors.grey[200],
+            ),
           ),
         ],
+        showingTooltipIndicators: [0],
+      );
+    }).toList();
+  }
+
+  List<PieChartSectionData> _createPieChartSections(QuestionStats qStats) {
+    final colors = [
+      const Color(0xFF5C6BC0),
+      const Color(0xFF66BB6A),
+      const Color(0xFFFFB74D),
+      const Color(0xFF9575CD),
+      const Color(0xFF4DB6AC),
+      const Color(0xFFF06292),
+    ];
+
+    final totalResponses =
+        qStats.responses.values.fold<int>(0, (prev, value) => prev + value);
+
+    return qStats.responses.entries.map((entry) {
+      final index = qStats.responses.keys.toList().indexOf(entry.key);
+      final value = entry.value;
+      final percentage = (value / totalResponses) * 100;
+
+      return PieChartSectionData(
+        color: colors[index % colors.length],
+        value: value.toDouble(),
+        title: '${percentage.toStringAsFixed(1)}%',
+        radius: 80, // 크기 조정
+        titleStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        badgeWidget: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(4),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 2,
+                offset: const Offset(0, 1),
+              ),
+            ],
+          ),
+          child: Text(
+            entry.key,
+            style: TextStyle(
+              color: colors[index % colors.length],
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        badgePositionPercentageOffset: 1.2,
       );
     }).toList();
   }

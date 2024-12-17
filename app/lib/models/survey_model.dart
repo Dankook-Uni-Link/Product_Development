@@ -49,13 +49,16 @@ class Survey {
   }
 
   factory Survey.fromJson(Map<String, dynamic> json) {
+    print('Survey JSON data: $json'); // 데이터 확인용 로그
     return Survey(
       id: json['id'],
       creatorId: json['creatorId'],
       title: json['title'],
       description: json['description'],
-      questions:
-          (json['questions'] as List).map((q) => Question.fromJson(q)).toList(),
+      questions: (json['questions'] as List).map((q) {
+        print('Question data: $q'); // 각 질문 데이터 확인용 로그
+        return Question.fromJson(q);
+      }).toList(),
       rewardAmount: json['rewardAmount'],
       targetResponses: json['targetResponses'],
       targetConditions:

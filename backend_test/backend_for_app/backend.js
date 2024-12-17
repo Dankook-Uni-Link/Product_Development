@@ -9,6 +9,61 @@ const users = new Map(); // 사용자 정보를 저장하는 Map
 // POST 요청의 body를 파싱하기 위한 미들웨어 추가
 app.use(express.json());
 
+// 기존의 function 선언을 삭제하고 새로 선언
+const updateSurveyStats = (surveyId, userId, responses) => {
+  // stats 폴더가 없으면 생성
+  const statsDir = path.join(__dirname, "stats");
+  if (!fs.existsSync(statsDir)) {
+    fs.mkdirSync(statsDir);
+  }
+
+  const statsPath = path.join(
+    __dirname,
+    "stats",
+    `survey_${surveyId}_stats.json`
+  );
+
+  // 기존 stats 읽기 또는 초기화
+  let stats;
+  try {
+    stats = JSON.parse(fs.readFileSync(statsPath, "utf8"));
+  } catch {
+    stats = {
+      summary: {
+        totalResponses: 0,
+        lastUpdated: new Date().toISOString(),
+      },
+      questions: {},
+    };
+  }
+
+  // 응답 수 업데이트
+  stats.summary.totalResponses += 1;
+  stats.summary.lastUpdated = new Date().toISOString();
+
+  // 응답 데이터 집계
+  Object.entries(responses).forEach(([questionId, answers]) => {
+    if (!stats.questions[questionId]) {
+      stats.questions[questionId] = {
+        responses: {},
+      };
+    }
+
+    // answers가 배열인 경우 각 답변을 개별적으로 카운트
+    if (Array.isArray(answers)) {
+      answers.forEach((answer) => {
+        stats.questions[questionId].responses[answer] =
+          (stats.questions[questionId].responses[answer] || 0) + 1;
+      });
+    }
+  });
+
+  // 파일 저장
+  fs.writeFileSync(statsPath, JSON.stringify(stats, null, 2));
+
+  return stats;
+};
+
 // 설문 참여자 수 업데이트 함수
 function updateSurveyParticipants(surveyId) {
   const surveyPath = path.join(__dirname, "data", `${surveyId}.json`);
@@ -280,63 +335,6 @@ async function handleSurveyParticipation(userId, surveyId, responses) {
     console.error("Error in survey participation:", error);
     return false;
   }
-
-  function updateSurveyStats(surveyId, userId, responses) {
-    // stats 폴더가 없으면 생성
-    const statsDir = path.join(__dirname, "stats");
-    if (!fs.existsSync(statsDir)) {
-      fs.mkdirSync(statsDir);
-    }
-    const statsPath = path.join(
-      __dirname,
-      "stats",
-      `survey_${surveyId}_stats.json`
-    );
-
-    // 기존 stats 읽기 또는 초기화
-    let stats;
-    try {
-      stats = JSON.parse(fs.readFileSync(statsPath, "utf8"));
-    } catch {
-      stats = {
-        summary: {
-          totalResponses: 0,
-          lastUpdated: new Date().toISOString(),
-        },
-        questions: {},
-      };
-    }
-
-    // 응답 수 업데이트
-    stats.summary.totalResponses += 1;
-    stats.summary.lastUpdated = new Date().toISOString();
-
-    // 응답 데이터 집계 - 단순히 각 선택지별 응답 수만 카운트
-    Object.entries(responses).forEach(([questionId, answer]) => {
-      if (!stats.questions[questionId]) {
-        stats.questions[questionId] = {
-          responses: {},
-        };
-      }
-
-      if (Array.isArray(answer)) {
-        // 복수 선택 질문의 경우
-        answer.forEach((option) => {
-          stats.questions[questionId].responses[option] =
-            (stats.questions[questionId].responses[option] || 0) + 1;
-        });
-      } else {
-        // 단일 선택 질문의 경우
-        stats.questions[questionId].responses[answer] =
-          (stats.questions[questionId].responses[answer] || 0) + 1;
-      }
-    });
-
-    // 파일 저장
-    fs.writeFileSync(statsPath, JSON.stringify(stats, null, 2));
-
-    return stats;
-  }
 }
 
 // 뷰 엔진 설정
@@ -467,42 +465,101 @@ app.post("/surveys", (req, res) => {
 //   }
 // });
 
+// app.post("/surveys/:surveyId/participate", async (req, res) => {
+//   try {
+//     const surveyId = parseInt(req.params.surveyId);
+//     const { userId, responses } = req.body;
+
+//     console.log("Received participation request:", {
+//       surveyId,
+//       userId,
+//       responses,
+//     });
+
+//     // 참여자의 activities 파일 경로
+//     const activitiesPath = path.join(
+//       __dirname,
+//       "users",
+//       "activities",
+//       `${userId}.json`
+//     );
+
+//     // activities 파일 읽기 또는 초기화
+//     let activities;
+//     try {
+//       activities = JSON.parse(fs.readFileSync(activitiesPath, "utf8"));
+//     } catch {
+//       activities = {
+//         created_surveys: [],
+//         participated_surveys: [],
+//       };
+//     }
+
+//     // participated_surveys가 없으면 초기화
+//     if (!activities.participated_surveys) {
+//       activities.participated_surveys = [];
+//     }
+
+//     // 중복 참여 체크
+//     const hasParticipated = activities.participated_surveys.some(
+//       (survey) => survey.surveyId === surveyId
+//     );
+
+//     if (hasParticipated) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "이미 참여한 설문입니다.",
+//       });
+//     }
+
+//     // 설문 참여자 수 업데이트
+//     const updatedSurvey = updateSurveyParticipants(surveyId);
+
+//     // participated_surveys 배열에 참여 기록 추가
+//     activities.participated_surveys.push({
+//       surveyId: surveyId,
+//       participatedAt: new Date().toISOString(),
+//       responses: responses,
+//     });
+
+//     // 업데이트된 activities 저장
+//     fs.writeFileSync(activitiesPath, JSON.stringify(activities, null, 2));
+
+//     // 통계 데이터 업데이트
+//     const updatedStats = updateSurveyStats(surveyId, userId, responses);
+
+//     console.log("Successfully updated survey, activities and stats");
+
+//     res.status(200).json({
+//       success: true,
+//       message: "Survey participation recorded successfully",
+//       updatedSurvey,
+//       stats: updatedStats,
+//     });
+//   } catch (error) {
+//     console.error("Survey participation error:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "참여 처리 중 오류가 발생했습니다.",
+//       error: error.message,
+//     });
+//   }
+// });
+
 app.post("/surveys/:surveyId/participate", async (req, res) => {
   try {
     const surveyId = parseInt(req.params.surveyId);
     const { userId, responses } = req.body;
 
-    console.log("Received participation request:", {
-      surveyId,
-      userId,
-      responses,
-    });
-
-    // 참여자의 activities 파일 경로
+    // 1. 먼저 중복 참여 체크
     const activitiesPath = path.join(
       __dirname,
       "users",
       "activities",
       `${userId}.json`
     );
+    let activities = JSON.parse(fs.readFileSync(activitiesPath, "utf8"));
 
-    // activities 파일 읽기 또는 초기화
-    let activities;
-    try {
-      activities = JSON.parse(fs.readFileSync(activitiesPath, "utf8"));
-    } catch {
-      activities = {
-        created_surveys: [],
-        participated_surveys: [],
-      };
-    }
-
-    // participated_surveys가 없으면 초기화
-    if (!activities.participated_surveys) {
-      activities.participated_surveys = [];
-    }
-
-    // 중복 참여 체크
     const hasParticipated = activities.participated_surveys.some(
       (survey) => survey.surveyId === surveyId
     );
@@ -514,23 +571,19 @@ app.post("/surveys/:surveyId/participate", async (req, res) => {
       });
     }
 
-    // 설문 참여자 수 업데이트
+    // 2. 통계 데이터 업데이트 (여기서 에러가 나면 activities는 업데이트되지 않음)
+    const updatedStats = updateSurveyStats(surveyId, userId, responses);
+
+    // 3. 설문 참여자 수 업데이트
     const updatedSurvey = updateSurveyParticipants(surveyId);
 
-    // participated_surveys 배열에 참여 기록 추가
+    // 4. activities 업데이트 (모든 것이 성공한 후에 마지막으로 수행)
     activities.participated_surveys.push({
       surveyId: surveyId,
       participatedAt: new Date().toISOString(),
       responses: responses,
     });
-
-    // 업데이트된 activities 저장
     fs.writeFileSync(activitiesPath, JSON.stringify(activities, null, 2));
-
-    // 통계 데이터 업데이트
-    const updatedStats = updateSurveyStats(surveyId, userId, responses);
-
-    console.log("Successfully updated survey, activities and stats");
 
     res.status(200).json({
       success: true,

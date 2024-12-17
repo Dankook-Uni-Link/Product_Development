@@ -1,0 +1,32 @@
+{
+  "creatorId": 2,
+  "title": "t",
+  "description": "t",
+  "questions": [
+    {
+      "content": "t1",
+      "type": "singleChoice",
+      "options": ["1", "2"],
+      "order": 1
+    },
+    {
+      "content": "t2",
+      "type": "singleChoice",
+      "options": ["1", "2"],
+      "order": 2
+    }
+  ],
+  "rewardAmount": 111,
+  "targetResponses": 1,
+  "targetConditions": {
+    "ageRanges": ["10대"],
+    "genders": ["남성"],
+    "locations": ["서울"],
+    "occupations": ["대학생"]
+  },
+  "createdAt": "2024-12-17T03:05:41.498354",
+  "expiresAt": "2025-01-16T03:05:41.498516",
+  "status": "active",
+  "currentResponses": 0,
+  "id": 3
+}

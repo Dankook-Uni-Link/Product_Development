@@ -1,9 +1,62 @@
 {
   "created_surveys": [
     {
-      "surveyId": 1,
-      "createdAt": "2024-12-17T00:51:12.655Z"
+      "surveyId": 2,
+      "createdAt": "2024-12-17T03:04:40.461Z"
+    },
+    {
+      "surveyId": 4,
+      "createdAt": "2024-12-17T03:09:16.383Z"
     }
   ],
-  "participated_surveys": []
+  "participated_surveys": [
+    {
+      "surveyId": 1,
+      "participatedAt": "2024-12-17T02:49:38.089Z",
+      "responses": {
+        "0": [
+          "1"
+        ]
+      }
+    },
+    {
+      "surveyId": 4,
+      "participatedAt": "2024-12-17T03:09:57.981Z",
+      "responses": {
+        "0": [
+          "1"
+        ],
+        "1": [
+          "1",
+          "2"
+        ]
+      }
+    },
+    {
+      "surveyId": 5,
+      "participatedAt": "2024-12-17T04:29:19.334Z",
+      "responses": {
+        "0": [
+          "c"
+        ],
+        "1": [
+          "c",
+          "s"
+        ]
+      }
+    },
+    {
+      "surveyId": 6,
+      "participatedAt": "2024-12-17T04:32:04.880Z",
+      "responses": {
+        "0": [
+          "d"
+        ],
+        "1": [
+          "v",
+          "d"
+        ]
+      }
+    }
+  ]
 }

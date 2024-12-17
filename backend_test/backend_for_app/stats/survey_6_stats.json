@@ -1,0 +1,21 @@
+{
+  "summary": {
+    "totalResponses": 3,
+    "lastUpdated": "2024-12-17T04:32:55.820Z"
+  },
+  "questions": {
+    "0": {
+      "responses": {
+        "d": 2,
+        "s": 1
+      }
+    },
+    "1": {
+      "responses": {
+        "d": 2,
+        "v": 3,
+        "a": 1
+      }
+    }
+  }
+}
