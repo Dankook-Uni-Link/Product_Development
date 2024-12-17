@@ -13,6 +13,27 @@ class SurveyStatsScreen extends StatelessWidget {
     required this.survey,
   });
 
+  void _showFullTextSnackBar(BuildContext context, String text) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.white,
+          ),
+        ),
+        duration: const Duration(seconds: 2),
+        backgroundColor: Colors.black87,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +54,7 @@ class SurveyStatsScreen extends StatelessWidget {
         ),
       ),
       body: FutureBuilder<SurveyStats>(
-        future: ApiService().getSurveyStats(survey.id), // API 추가 필요
+        future: ApiService().getSurveyStats(survey.id),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -100,10 +121,7 @@ class SurveyStatsScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 16),
-
-                // 응답 현황 상세 정보
                 Row(
                   children: [
                     Expanded(
@@ -125,7 +143,7 @@ class SurveyStatsScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                _buildQuestionStats(snapshot.data!),
+                _buildQuestionStats(context, snapshot.data!),
               ],
             ),
           );
@@ -167,7 +185,7 @@ class SurveyStatsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildQuestionStats(SurveyStats stats) {
+  Widget _buildQuestionStats(BuildContext context, SurveyStats stats) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -183,27 +201,22 @@ class SurveyStatsScreen extends StatelessWidget {
         ),
         ...stats.questions.entries
             .map((entry) => _buildQuestionCard(
+                  context: context,
                   questionId: entry.key,
                   stats: entry.value,
-                  survey: survey, // survey 전달
+                  survey: survey,
                 ))
             .toList(),
       ],
     );
   }
 
-  Widget _buildQuestionCard(
-      {required String questionId,
-      required QuestionStats stats,
-      required Survey survey}) {
-    // questionId가 "0"부터 시작하는지 "1"부터 시작하는지 확인
-    print('QuestionId (raw): $questionId');
-    print('All questions:');
-    for (var q in survey.questions) {
-      print('Order: ${q.order}, Type: ${q.type}, Content: ${q.content}');
-    }
-
-    // questionId를 인덱스로 사용하여 질문 찾기 (0-based)
+  Widget _buildQuestionCard({
+    required BuildContext context,
+    required String questionId,
+    required QuestionStats stats,
+    required Survey survey,
+  }) {
     final questionIndex = int.parse(questionId);
     final question = questionIndex < survey.questions.length
         ? survey.questions[questionIndex]
@@ -213,9 +226,6 @@ class SurveyStatsScreen extends StatelessWidget {
             options: [],
             order: questionIndex,
           );
-
-    print(
-        'Selected question - Index: $questionIndex, Type: ${question.type}, Content: ${question.content}');
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -237,9 +247,9 @@ class SurveyStatsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Container(
-              height: 250, // 차트 높이 조정
+              height: 250,
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: _buildChart(question.type, stats),
+              child: _buildChart(context, question.type, stats),
             ),
           ],
         ),
@@ -247,7 +257,8 @@ class SurveyStatsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildChart(QuestionType type, QuestionStats stats) {
+  Widget _buildChart(
+      BuildContext context, QuestionType type, QuestionStats stats) {
     if (type == QuestionType.singleChoice) {
       return PieChart(
         PieChartData(
@@ -271,33 +282,60 @@ class SurveyStatsScreen extends StatelessWidget {
             horizontalInterval: 1,
             getDrawingHorizontalLine: (value) {
               return FlLine(
-                color: Colors.grey.shade300,
+                color: Colors.grey.shade100,
                 strokeWidth: 1,
-                dashArray: const [5, 5],
               );
             },
           ),
-          // 바 터치 효과 제거
           barTouchData: BarTouchData(
             enabled: true,
+            touchTooltipData: BarTouchTooltipData(
+              tooltipBgColor: Colors.black87,
+              tooltipPadding: const EdgeInsets.all(8),
+              tooltipMargin: 8,
+              getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                return BarTooltipItem(
+                  rod.toY.toInt().toString(),
+                  const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              },
+            ),
           ),
-          // 세로축 숫자 간격 조정
           titlesData: FlTitlesData(
-            topTitles:
-                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles:
-                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            rightTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
                 getTitlesWidget: (value, meta) {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      stats.responses.keys.elementAt(value.toInt()),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                  String fullText =
+                      stats.responses.keys.elementAt(value.toInt());
+                  return GestureDetector(
+                    onTap: () => _showFullTextSnackBar(context, fullText),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 8,
+                      ),
+                      width: 60, // 터치 영역 확보를 위한 고정 너비
+                      color: Colors.transparent,
+                      child: Text(
+                        fullText.length > 8
+                            ? '${fullText.substring(0, 6)}...'
+                            : fullText,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF666666),
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   );
@@ -309,16 +347,18 @@ class SurveyStatsScreen extends StatelessWidget {
               sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 40,
-                interval: 1.0, // 간격을 1로 설정
+                interval: 1.0,
                 getTitlesWidget: (value, meta) {
-                  // 정수값만 표시
                   if (value == value.roundToDouble()) {
-                    return Text(
-                      value.toInt().toString(),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey,
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Text(
+                        value.toInt().toString(),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF999999),
+                        ),
                       ),
                     );
                   }
@@ -340,15 +380,11 @@ class SurveyStatsScreen extends StatelessWidget {
         barRods: [
           BarChartRodData(
             toY: entry.value.toDouble(),
-            width: 30,
-            color: const Color(0xFF5C6BC0),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
+            width: 40,
+            color: const Color(0xFF4A90E2),
+            borderRadius: BorderRadius.circular(8),
             backDrawRodData: BackgroundBarChartRodData(
-              show: true,
-              toY: responses.values
-                  .reduce((max, value) => max > value ? max : value)
-                  .toDouble(),
-              color: Colors.grey[200],
+              show: false,
             ),
           ),
         ],
@@ -379,7 +415,7 @@ class SurveyStatsScreen extends StatelessWidget {
         color: colors[index % colors.length],
         value: value.toDouble(),
         title: '${percentage.toStringAsFixed(1)}%',
-        radius: 80, // 크기 조정
+        radius: 80,
         titleStyle: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.bold,
