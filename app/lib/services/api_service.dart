@@ -124,7 +124,6 @@ class ApiService {
     }
   }
 
-<<<<<<< HEAD
   // String? _selectRegion;
   // String? _selectJob;
 
@@ -134,9 +133,6 @@ class ApiService {
 지역: 서울 경기 인천 강원 충청 전라 경상 제주
 직업: 대학생 직장인 자영업자 전문직 주부 무직 기타
 */
-=======
-
->>>>>>> 2db410442a0080b3cb9ba5b2b1c7712c1f61c2eb
   // 설문조사 생성하기
   Future<Result> createSurvey(
     String title,
