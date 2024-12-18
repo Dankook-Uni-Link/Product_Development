@@ -3,6 +3,7 @@ import 'package:app/models/survey_model.dart';
 import 'package:app/provider/user_provider.dart';
 import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 // 화면 구현
@@ -131,12 +132,11 @@ class PointHistoryScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${history.date.year}.${history.date.month}.${history.date.day}',
+                  DateFormat('yyyy.MM.dd').format(history.createdAt),
                   style: TextStyle(
                     color: Colors.grey[600],
-                    fontSize: 14,
                   ),
-                ),
+                )
               ],
             ),
           ),

@@ -221,7 +221,7 @@ class SurveyStatsScreen extends StatelessWidget {
     final question = questionIndex < survey.questions.length
         ? survey.questions[questionIndex]
         : Question(
-            content: 'Unknown Question',
+            question: 'Unknown Question',
             type: QuestionType.singleChoice,
             options: [],
             order: questionIndex,
@@ -239,7 +239,7 @@ class SurveyStatsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              question.content,
+              question.question,
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,

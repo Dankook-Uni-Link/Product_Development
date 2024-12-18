@@ -8,6 +8,33 @@ class AuthService {
   final String baseUrl =
       "http://10.0.2.2:3000"; //"http://localhost:3000"; //"http://10.0.2.2:3000";
 
+  // Future<User> signUp({
+  //   required String email,
+  //   required String password,
+  //   required String name,
+  //   required DateTime birthDate,
+  //   required String gender,
+  //   required String location,
+  //   required String occupation,
+  // }) async {
+  //   final response = await http.post(
+  //     Uri.parse('$baseUrl/auth/signup'),
+  //     headers: {'Content-Type': 'application/json'},
+  //     body: jsonEncode({
+  //       'email': email,
+  //       'password': password,
+  //       'name': name,
+  //       'birthDate': birthDate.toIso8601String(),
+  //       'gender': gender,
+  //       'location': location,
+  //       'occupation': occupation,
+  //     }),
+  //   );
+  //   if (response.statusCode == 201) {
+  //     return User.fromJson(jsonDecode(response.body));
+  //   }
+  //   throw Exception('Failed to sign up');
+  // }
   Future<User> signUp({
     required String email,
     required String password,
@@ -17,23 +44,51 @@ class AuthService {
     required String location,
     required String occupation,
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/signup'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
+    try {
+      print('Attempting to sign up with data:'); // 추가
+      print('Email: $email'); // 추가
+      print('Name: $name'); // 추가
+      print('Birth Date: $birthDate'); // 추가
+      print('Gender: $gender'); // 추가
+      print('Location: $location'); // 추가
+      print('Occupation: $occupation'); // 추가
+
+      final requestBody = jsonEncode({
         'email': email,
         'password': password,
         'name': name,
-        'birthDate': birthDate.toIso8601String(),
+        'birthDate': birthDate.toLocal().toString().split(' ')[0],
         'gender': gender,
         'location': location,
         'occupation': occupation,
-      }),
-    );
-    if (response.statusCode == 201) {
-      return User.fromJson(jsonDecode(response.body));
+      });
+
+      print('Request body: $requestBody'); // 추가
+      print('Request URL: $baseUrl/auth/signup'); // 추가
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/signup'),
+        headers: {'Content-Type': 'application/json'},
+        body: requestBody,
+      );
+
+      print('Response status: ${response.statusCode}'); // 추가
+      print('Response body: ${response.body}'); // 추가
+
+      if (response.statusCode == 201) {
+        return User.fromJson(jsonDecode(response.body));
+      }
+
+      // 에러 응답 처리 개선
+      final error = jsonDecode(response.body);
+      throw Exception(
+          error['message'] ?? 'Failed to sign up: ${response.statusCode}');
+    } catch (e, stackTrace) {
+      // stackTrace 추가
+      print('Sign up error: $e'); // 추가
+      print('Stack trace: $stackTrace'); // 추가
+      rethrow;
     }
-    throw Exception('Failed to sign up');
   }
 
   // auth_service.dart

@@ -31,7 +31,7 @@ class QuestionData {
 
   Question toQuestion() {
     return Question(
-      content: content,
+      question: content,
       type: type,
       options: options,
       order: order,

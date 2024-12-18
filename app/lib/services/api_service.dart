@@ -138,6 +138,7 @@ class ApiService {
     return response.statusCode == 201;
   }
 
+// api_service.dart
   Future<SurveyStats> getSurveyStats(int? surveyId) async {
     if (surveyId == null) {
       throw Exception('Survey ID cannot be null');
@@ -147,19 +148,22 @@ class ApiService {
 
     try {
       final response = await http.get(url);
+      print('Stats API response: ${response.body}'); // 응답 데이터 확인
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
+        print('Decoded JSON: $json'); // 디코딩된 JSON 확인
         return SurveyStats.fromJson(json);
       } else {
         throw Exception('Failed to load survey statistics');
       }
     } catch (e) {
+      print('Error loading stats: $e'); // 에러 로그 추가
       throw Exception('Error: $e');
     }
   }
 
-  Future<Survey> participateInSurvey(
+  Future<bool> participateInSurvey(
       int surveyId, int userId, Map<String, List<String>> responses) async {
     try {
       final requestBody = {
@@ -167,7 +171,7 @@ class ApiService {
         'responses': responses,
       };
 
-      print('Request body: ${jsonEncode(requestBody)}'); // 디버깅용
+      print('Request body: ${jsonEncode(requestBody)}');
 
       final response = await http.post(
         Uri.parse('$baseUrl/surveys/$surveyId/participate'),
@@ -175,12 +179,12 @@ class ApiService {
         body: jsonEncode(requestBody),
       );
 
-      print('Response status: ${response.statusCode}'); // 디버깅용
-      print('Response body: ${response.body}'); // 디버깅용
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return Survey.fromJson(data['updatedSurvey']);
+        return data['success'] ?? false;
       }
 
       final error = jsonDecode(response.body);
@@ -193,18 +197,29 @@ class ApiService {
 
   Future<List<Survey>> getParticipatedSurveys(int userId) async {
     try {
-      final url = Uri.parse('$baseUrl/users/$userId/participations');
-      final response = await http.get(url, headers: await _getHeaders());
+      final activities = await getUserActivities(userId);
 
-      if (response.statusCode == 200) {
-        final List<dynamic> jsonList = jsonDecode(response.body);
-        return jsonList.map((json) => Survey.fromJson(json)).toList();
-      } else {
-        throw Exception('Failed to load participated surveys');
+      // activities에서 참여한 설문들의 ID를 추출
+      final surveyIds =
+          activities.participatedSurveys.map((p) => p.surveyId).toList();
+
+      // 각 설문의 상세 정보를 가져오기
+      List<Survey> participatedSurveys = [];
+      for (var id in surveyIds) {
+        try {
+          final survey = await getSurvey(id);
+          participatedSurveys.add(survey);
+        } catch (e) {
+          print('Error fetching survey $id: $e');
+          // 개별 설문 조회 실패는 무시하고 계속 진행
+          continue;
+        }
       }
+
+      return participatedSurveys;
     } catch (e) {
       print('Error in getParticipatedSurveys: $e');
-      rethrow;
+      throw Exception('Failed to load participated surveys');
     }
   }
 

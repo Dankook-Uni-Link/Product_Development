@@ -138,7 +138,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
             ),
             const SizedBox(height: 18),
             Text(
-              currentQuestion.content,
+              currentQuestion.question,
               style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(height: 20),

@@ -22,6 +22,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String? _selectedLocation;
   String? _selectedOccupation;
 
+  // 드롭다운 초기화가 제대로 되었는지 확인
+  @override
+  void initState() {
+    super.initState();
+    print('Initial values:');
+    print('Gender: $_selectedGender');
+    print('Location: $_selectedLocation');
+    print('Occupation: $_selectedOccupation');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -253,7 +263,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
         );
         return;
       }
-
+// 값 확인 로그 추가
+      print('Sending signup data:');
+      print('Email: ${_emailController.text}');
+      print('Password: ${_passwordController.text}');
+      print('Name: ${_nameController.text}');
+      print('Birth Date: $_selectedDate');
+      print('Gender: $_selectedGender');
+      print('Location: $_selectedLocation');
+      print('Occupation: $_selectedOccupation');
       try {
         await AuthService().signUp(
           email: _emailController.text,
@@ -274,8 +292,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
         Navigator.pushReplacementNamed(context, '/login');
       } catch (e) {
         if (!mounted) return;
+        // 에러 메시지에서 'Exception: ' 부분을 제거하고 표시
+        final errorMessage = e.toString().replaceAll('Exception: ', '');
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('회원가입 실패: $e')),
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            margin: EdgeInsets.only(
+              bottom: MediaQuery.of(context).size.height - 100,
+              right: 20,
+              left: 20,
+            ),
+          ),
         );
       }
     }

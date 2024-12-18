@@ -9,11 +9,27 @@ class Survey {
   final List<Question> questions;
   final int rewardAmount;
   final int targetResponses;
-  final SurveyTargetConditions targetConditions;
+  final SurveyTargetConditions targetConditions; // 추가
+  final int currentResponses;
   final DateTime createdAt;
   final DateTime expiresAt;
   final SurveyStatus status;
-  final int currentResponses; // 필드 추가
+  final String creatorName; // creatorName 필드 추가
+
+  // Survey({
+  //   this.id,
+  //   required this.creatorId,
+  //   required this.title,
+  //   required this.description,
+  //   required this.questions,
+  //   required this.rewardAmount,
+  //   required this.targetResponses,
+  //   required this.targetConditions,
+  //   required this.createdAt,
+  //   required this.expiresAt,
+  //   required this.status,
+  //   this.currentResponses = 0,
+  // });
 
   Survey({
     this.id,
@@ -22,13 +38,19 @@ class Survey {
     required this.description,
     required this.questions,
     required this.rewardAmount,
-    required this.targetResponses,
-    required this.targetConditions,
-    required this.createdAt,
-    required this.expiresAt,
-    required this.status,
+    this.targetResponses = 100,
+    SurveyTargetConditions? targetConditions, // 선택적 매개변수
     this.currentResponses = 0,
-  });
+    DateTime? createdAt,
+    DateTime? expiresAt,
+    this.status = SurveyStatus.active,
+    this.creatorName = '', // 기본값 설정
+  })  : targetConditions = targetConditions ?? SurveyTargetConditions(// 기본값 설정
+            ageRanges: [], genders: [], locations: [], occupations: []),
+        createdAt = createdAt ?? DateTime.now(),
+        expiresAt = expiresAt ??
+            DateTime.now()
+                .add(const Duration(days: 30)); // 기본값 설정 (예: 30일 후 만료)
 
   // 기존 코드와의 호환성을 위한 getter들
   String get surveyTitle => title;
@@ -48,27 +70,80 @@ class Survey {
     return (currentResponses / targetResponses).clamp(0.0, 1.0);
   }
 
+  // factory Survey.fromJson(Map<String, dynamic> json) {
+  //   print('Survey JSON data: $json'); // 데이터 확인용 로그
+  //   return Survey(
+  //     id: json['id'],
+  //     creatorId: json['creatorId'],
+  //     title: json['title'],
+  //     description: json['description'],
+  //     questions: (json['questions'] as List).map((q) {
+  //       print('Question data: $q'); // 각 질문 데이터 확인용 로그
+  //       return Question.fromJson(q);
+  //     }).toList(),
+  //     rewardAmount: json['rewardAmount'],
+  //     targetResponses: json['targetResponses'],
+  //     targetConditions:
+  //         SurveyTargetConditions.fromJson(json['targetConditions']),
+  //     createdAt: DateTime.parse(json['createdAt']),
+  //     expiresAt: DateTime.parse(json['expiresAt']),
+  //     status: SurveyStatus.values
+  //         .firstWhere((e) => e.toString() == 'SurveyStatus.${json['status']}'),
+  //     currentResponses: json['currentResponses'] ?? 0,
+  //   );
+  // }
+
   factory Survey.fromJson(Map<String, dynamic> json) {
-    print('Survey JSON data: $json'); // 데이터 확인용 로그
-    return Survey(
-      id: json['id'],
-      creatorId: json['creatorId'],
-      title: json['title'],
-      description: json['description'],
-      questions: (json['questions'] as List).map((q) {
-        print('Question data: $q'); // 각 질문 데이터 확인용 로그
-        return Question.fromJson(q);
-      }).toList(),
-      rewardAmount: json['rewardAmount'],
-      targetResponses: json['targetResponses'],
-      targetConditions:
-          SurveyTargetConditions.fromJson(json['targetConditions']),
-      createdAt: DateTime.parse(json['createdAt']),
-      expiresAt: DateTime.parse(json['expiresAt']),
-      status: SurveyStatus.values
-          .firstWhere((e) => e.toString() == 'SurveyStatus.${json['status']}'),
-      currentResponses: json['currentResponses'] ?? 0,
-    );
+    // 각 필드 데이터 로깅
+    print('Parsing survey data:');
+    print('id: ${json['id']}');
+    print('creator_id: ${json['creator_id']}');
+    print('title: ${json['title']}');
+    print('description: ${json['description']}');
+    print('questions: ${json['questions']}');
+    print('reward_amount: ${json['reward_amount']}');
+    print('current_responses: ${json['current_responses']}');
+    print('created_at: ${json['created_at']}');
+    print('creator_name: ${json['creator_name']}'); // null이 오는 부분 확인
+    print('target_responses: ${json['target_responses']}');
+    print('target_conditions: ${json['target_conditions']}');
+    print('expires_at: ${json['expires_at']}');
+    print('status: ${json['status']}');
+
+    try {
+      return Survey(
+          id: json['id'],
+          creatorId: json['creator_id'] ?? 0,
+          title: json['title'] ?? '',
+          description: json['description'] ?? '',
+          questions: (json['questions'] as List?)
+                  ?.map((q) => Question.fromJson(q))
+                  .toList() ??
+              [],
+          rewardAmount: json['reward_amount'] ?? 0,
+          currentResponses: json['current_responses'] ?? 0,
+          createdAt: json['created_at'] != null
+              ? DateTime.parse(json['created_at'])
+              : DateTime.now(),
+          targetResponses: json['target_responses'] ?? 100,
+          targetConditions: json['target_conditions'] != null
+              ? SurveyTargetConditions.fromJson(json['target_conditions'])
+              : SurveyTargetConditions(
+                  ageRanges: [], genders: [], locations: [], occupations: []),
+          expiresAt: json['expires_at'] != null
+              ? DateTime.parse(json['expires_at'])
+              : DateTime.now().add(const Duration(days: 30)),
+          status: SurveyStatus.values.firstWhere(
+              (e) =>
+                  e.toString() == 'SurveyStatus.${json['status'] ?? 'active'}',
+              orElse: () => SurveyStatus.active),
+          creatorName: json['creator_name']?.toString() ?? '' // toString() 추가
+          );
+    } catch (e, stack) {
+      print('Error parsing survey: $e');
+      print('Stack trace: $stack');
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toJson() => {
@@ -103,12 +178,15 @@ class Survey {
     }
   }
 
-// survey_model.dart
   Future<bool> hasUserParticipated(int userId) async {
     try {
       final activities = await ApiService().getUserActivities(userId);
       print('Checking participation for survey $id, user $userId');
-      print('User activities: ${activities.participatedSurveys}');
+      print('Survey ID to check: $id');
+      for (var participation in activities.participatedSurveys) {
+        print('Participation survey ID: ${participation.surveyId}');
+      }
+
       final hasParticipated =
           activities.participatedSurveys.any((p) => p.surveyId == id);
       print('Has participated: $hasParticipated');
@@ -156,26 +234,53 @@ class SurveyTargetConditions {
       };
 }
 
-// 포인트 내역을 위한 모델
+// // 포인트 내역을 위한 모델
+// class PointHistory {
+//   final String title;
+//   final DateTime date;
+//   final int points;
+//   final String type; // 'earn' or 'use'
+
+//   PointHistory({
+//     required this.title,
+//     required this.date,
+//     required this.points,
+//     required this.type,
+//   });
+
+//   factory PointHistory.fromJson(Map<String, dynamic> json) {
+//     return PointHistory(
+//       title: json['title'],
+//       date: DateTime.parse(json['date']),
+//       points: json['points'],
+//       type: json['type'],
+//     );
+//   }
+// }
 class PointHistory {
-  final String title;
-  final DateTime date;
+  final int id;
   final int points;
-  final String type; // 'earn' or 'use'
+  final String title;
+  final String type;
+  final DateTime createdAt;
 
   PointHistory({
-    required this.title,
-    required this.date,
+    required this.id,
     required this.points,
+    required this.title,
     required this.type,
+    required this.createdAt,
   });
 
   factory PointHistory.fromJson(Map<String, dynamic> json) {
     return PointHistory(
-      title: json['title'],
-      date: DateTime.parse(json['date']),
-      points: json['points'],
-      type: json['type'],
+      id: json['id'] ?? 0,
+      points: json['points'] ?? 0,
+      title: json['title'] ?? '',
+      type: json['type'] ?? '',
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : DateTime.now(),
     );
   }
 }
