@@ -1,37 +1,37 @@
 {
   "creatorId": 2,
-  "title": "a",
-  "description": "a",
+  "title": "ff",
+  "description": "f",
   "questions": [
     {
-      "content": "1",
+      "content": "w",
       "type": "singleChoice",
       "options": [
-        "1",
-        "2"
+        "s",
+        "sa"
       ],
       "order": 1
     }
   ],
   "rewardAmount": 111,
-  "targetResponses": 2,
+  "targetResponses": 11,
   "targetConditions": {
     "ageRanges": [
-      "10대"
+      "20대"
     ],
     "genders": [
-      "남성"
+      "여성"
     ],
     "locations": [
-      "서울"
+      "경기"
     ],
     "occupations": [
-      "대학생"
+      "직장인"
     ]
   },
-  "createdAt": "2024-12-17T02:49:14.471930",
-  "expiresAt": "2025-01-16T02:49:14.471960",
+  "createdAt": "2024-12-18T18:14:58.086731",
+  "expiresAt": "2025-01-17T18:14:58.086743",
   "status": "active",
   "currentResponses": 2,
-  "id": 1
+  "id": 8
 }

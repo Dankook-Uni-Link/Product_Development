@@ -182,23 +182,4 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
-  // void _handleLogin() async {
-  //   if (_formKey.currentState?.validate() ?? false) {
-  //     try {
-  //       final token = await AuthService().login(
-  //         _emailController.text,
-  //         _passwordController.text,
-  //       );
-  //       await TokenService.saveToken(token);
-  //       if (!mounted) return;
-  //       Navigator.pushReplacementNamed(context, '/home');
-  //     } catch (e) {
-  //       if (!mounted) return;
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('로그인 실패: $e')),
-  //       );
-  //     }
-  //   }
-  // }
 }

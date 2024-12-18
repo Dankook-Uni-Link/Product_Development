@@ -1,11 +1,8 @@
-import 'package:app/design/colors.dart';
 import 'package:app/screen/home_screen.dart';
 import 'package:app/screen/make_survey_screen.dart';
 import 'package:app/screen/market_screen.dart';
 import 'package:app/screen/my_page.dart';
 import 'package:app/screen/raffle_screen.dart';
-import 'package:app/screen/survey_screen.dart';
-import 'package:app/screen/vote_screen.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavBar extends StatelessWidget {
@@ -69,30 +66,6 @@ class BottomNavBar extends StatelessWidget {
             page = const MakeSurveyScreen();
             break;
         }
-
-        //final bool goingRight = index > currentIndex;
-
-        // Navigator.pushReplacement(
-        //   context,
-        //   PageRouteBuilder(
-        //     pageBuilder: (context, animation, secondaryAnimation) => page,
-        //     transitionsBuilder:
-        //         (context, animation, secondaryAnimation, child) {
-        //       final begin = Offset(goingRight ? 1.0 : -1.0, 0.0);
-        //       const end = Offset.zero;
-        //       const curve = Curves.easeInOut;
-
-        //       final tween =
-        //           Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        //       final offsetAnimation = animation.drive(tween);
-
-        //       return SlideTransition(
-        //         position: offsetAnimation,
-        //         child: child,
-        //       );
-        //     },
-        //   ),
-        // );
         Navigator.push(
           context,
           PageRouteBuilder(

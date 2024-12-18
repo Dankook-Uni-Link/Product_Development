@@ -7,6 +7,10 @@
     {
       "surveyId": 3,
       "createdAt": "2024-12-17T03:05:42.417Z"
+    },
+    {
+      "surveyId": 8,
+      "createdAt": "2024-12-18T18:15:01.790Z"
     }
   ],
   "participated_surveys": [
@@ -53,6 +57,36 @@
         ],
         "1": [
           "1"
+        ]
+      }
+    },
+    {
+      "surveyId": 1,
+      "participatedAt": "2024-12-18T17:42:40.234Z",
+      "responses": {
+        "0": [
+          "2"
+        ]
+      }
+    },
+    {
+      "surveyId": 8,
+      "participatedAt": "2024-12-18T18:27:40.061Z",
+      "responses": {
+        "0": [
+          "s"
+        ]
+      }
+    },
+    {
+      "surveyId": 7,
+      "participatedAt": "2024-12-18T18:34:12.174Z",
+      "responses": {
+        "0": [
+          "ㅇ"
+        ],
+        "1": [
+          "ㄴ"
         ]
       }
     }

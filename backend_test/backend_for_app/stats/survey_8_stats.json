@@ -1,12 +1,13 @@
 {
   "summary": {
     "totalResponses": 2,
-    "lastUpdated": "2024-12-18T17:42:40.232Z"
+    "lastUpdated": "2024-12-18T18:27:40.059Z"
   },
   "questions": {
     "0": {
       "responses": {
-        "2": 2
+        "sa": 1,
+        "s": 1
       }
     }
   }

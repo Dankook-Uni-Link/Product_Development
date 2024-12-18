@@ -1,15 +1,85 @@
+//백엔드 서버의 메인 파일 // API 서버 파일
+
+// 1. 모듈 임포트
 const express = require("express");
 const ejs = require("ejs");
 const fs = require("fs");
 const path = require("path");
+
+// 2. 앱 초기화 및 기본 설정
 const app = express();
 const port = 3000;
-const users = new Map(); // 사용자 정보를 저장하는 Map
-
+//const users = new Map(); // 사용자 정보를 저장하는 Map
 // POST 요청의 body를 파싱하기 위한 미들웨어 추가
 app.use(express.json());
+// 뷰 엔진 설정
+app.set("view engine", "ejs");
+app.set("survey", "./survey");
 
-// 기존의 function 선언을 삭제하고 새로 선언
+// 특정 파일의 JSON 데이터를 읽어오는 함수
+function readJsonFileSync(filepath, encoding) {
+  if (typeof encoding === "undefined") {
+    encoding = "utf8";
+  }
+  const file = fs.readFileSync(filepath, encoding);
+  return JSON.parse(file);
+}
+
+function getSurveyData(filename) {
+  const filepath = path.join(__dirname, "data", filename);
+  const surveyData = readJsonFileSync(filepath);
+  const id = parseInt(filename.split(".")[0]);
+  return {
+    ...surveyData,
+    id: id,
+  };
+}
+
+// 전체 설문조사 목록을 가져오는 함수
+function getAllSurveys() {
+  const dirPath = path.join(__dirname, "data");
+  const files = fs.readdirSync(dirPath);
+  return files.map((file) => {
+    const surveyData = getSurveyData(file);
+    // 파일명에서 ID 추출 (예: "1.json" -> 1)
+    const id = parseInt(file.split(".")[0]);
+    return {
+      ...surveyData,
+      id: id,
+    };
+  });
+}
+
+// 새로운 설문을 저장하는 함수
+function saveSurvey(surveyData) {
+  const dirPath = path.join(__dirname, "data");
+  const files = fs.readdirSync(dirPath);
+  const newId = files.length + 1;
+  const filepath = path.join(dirPath, `${newId}.json`);
+
+  // surveyData에 id 추가
+  const surveyWithId = {
+    ...surveyData,
+    id: newId, // 이 부분이 있는지 확인
+  };
+
+  fs.writeFileSync(filepath, JSON.stringify(surveyWithId, null, 2));
+  return newId;
+}
+
+// 설문 참여자 수 업데이트 함수
+function updateSurveyParticipants(surveyId) {
+  const surveyPath = path.join(__dirname, "data", `${surveyId}.json`);
+  const survey = JSON.parse(fs.readFileSync(surveyPath, "utf8"));
+
+  // 현재 응답자 수 증가
+  survey.currentResponses = (survey.currentResponses || 0) + 1;
+
+  // 파일에 저장
+  fs.writeFileSync(surveyPath, JSON.stringify(survey, null, 2));
+  return survey;
+}
+
 const updateSurveyStats = (surveyId, userId, responses) => {
   // stats 폴더가 없으면 생성
   const statsDir = path.join(__dirname, "stats");
@@ -63,76 +133,6 @@ const updateSurveyStats = (surveyId, userId, responses) => {
 
   return stats;
 };
-
-// 설문 참여자 수 업데이트 함수
-function updateSurveyParticipants(surveyId) {
-  const surveyPath = path.join(__dirname, "data", `${surveyId}.json`);
-  const survey = JSON.parse(fs.readFileSync(surveyPath, "utf8"));
-
-  // 현재 응답자 수 증가
-  survey.currentResponses = (survey.currentResponses || 0) + 1;
-
-  // 파일에 저장
-  fs.writeFileSync(surveyPath, JSON.stringify(survey, null, 2));
-  return survey;
-}
-
-// 특정 파일의 JSON 데이터를 읽어오는 함수
-function readJsonFileSync(filepath, encoding) {
-  if (typeof encoding === "undefined") {
-    encoding = "utf8";
-  }
-  const file = fs.readFileSync(filepath, encoding);
-  return JSON.parse(file);
-}
-
-function getSurveyData(filename) {
-  const filepath = path.join(__dirname, "data", filename);
-  const surveyData = readJsonFileSync(filepath);
-  const id = parseInt(filename.split(".")[0]);
-  return {
-    ...surveyData,
-    id: id,
-  };
-}
-
-// 전체 설문조사 목록을 가져오는 함수
-function getAllSurveys() {
-  const dirPath = path.join(__dirname, "data");
-  const files = fs.readdirSync(dirPath);
-  return files.map((file) => {
-    const surveyData = getSurveyData(file);
-    // 파일명에서 ID 추출 (예: "1.json" -> 1)
-    const id = parseInt(file.split(".")[0]);
-    return {
-      ...surveyData,
-      id: id,
-    };
-  });
-}
-
-// 기프티콘 데이터를 가져오는 함수
-function getGifticonData() {
-  const filepath = path.join(__dirname, "gifticon", "gifticons.json");
-  return readJsonFileSync(filepath);
-}
-
-// 새로운 설문을 저장하는 함수
-function saveSurvey(surveyData) {
-  const dirPath = path.join(__dirname, "data");
-  const files = fs.readdirSync(dirPath);
-  const newId = files.length + 1;
-  const filepath = path.join(dirPath, `${newId}.json`);
-
-  // surveyData에 id 추가
-  const surveyWithId = {
-    ...surveyData,
-    id: newId, // 이 부분이 있는지 확인
-  };
-
-  fs.writeFileSync(filepath, JSON.stringify(surveyWithId, null, 2));
-  return newId;
-}
 
 // 유저 정보 저장 함수
 function saveUserProfile(userData) {
@@ -258,88 +258,40 @@ function getLatestUserId() {
   return Math.max(...userIds);
 }
 
-// 사용자 활동 기록 업데이트 함수
-function updateUserActivities(userId, activityType, surveyId) {
-  const activitiesPath = path.join(
-    __dirname,
-    "users",
-    "activities",
-    `${userId}.json`
-  );
-
-  try {
-    // 현재 활동 기록 읽기
-    const activities = JSON.parse(fs.readFileSync(activitiesPath, "utf8"));
-
-    // 활동 타입에 따라 기록 추가
-    if (activityType === "created") {
-      activities.created_surveys.push({
-        surveyId: surveyId,
-        createdAt: new Date().toISOString(),
-      });
-    } else if (activityType === "participated") {
-      activities.participated_surveys.push({
-        surveyId: surveyId,
-        participatedAt: new Date().toISOString(),
-        status: "completed",
-      });
-    }
-
-    // 업데이트된 활동 기록 저장
-    fs.writeFileSync(activitiesPath, JSON.stringify(activities, null, 2));
-    return true;
-  } catch (error) {
-    console.error("Error updating user activities:", error);
-    return false;
-  }
+// 기프티콘 데이터를 가져오는 함수
+function getGifticonData() {
+  const filepath = path.join(__dirname, "gifticon", "gifticons.json");
+  return readJsonFileSync(filepath);
 }
 
-// 포인트 업데이트까지 고려한 통합 함수
-async function handleSurveyParticipation(userId, surveyId, responses) {
+// 포인트 업데이트 함수 수정
+function updateUserPoints(userId, pointChange, title) {
+  const pointsPath = path.join(__dirname, "users", "points", `${userId}.json`);
+
   try {
-    // 1. 응답 저장
-    saveResponse(surveyId, userId, responses);
+    // 현재 포인트 데이터 읽기
+    const pointData = JSON.parse(fs.readFileSync(pointsPath, "utf8"));
 
-    // 2. 활동 기록 업데이트
-    const activitySuccess = updateUserActivities(
-      userId,
-      "participated",
-      surveyId
-    );
+    // 포인트 업데이트
+    pointData.currentPoints += pointChange;
 
-    // 3. 설문 데이터 읽기
-    const survey = getSurveyData(`${surveyId}.json`);
-
-    // 4. 포인트 지급
-    const pointsPath = path.join(
-      __dirname,
-      "users",
-      "points",
-      `${userId}.json`
-    );
-    const pointsData = JSON.parse(fs.readFileSync(pointsPath, "utf8"));
-
-    pointsData.currentPoints += survey.rewardAmount;
-    pointsData.history.push({
-      type: "earn",
-      amount: survey.rewardAmount,
-      description: `설문 참여 보상 (설문 ID: ${surveyId})`,
-      timestamp: new Date().toISOString(),
-      relatedSurveyId: surveyId,
+    // 히스토리에 기록 추가
+    pointData.history.push({
+      title: title,
+      date: new Date().toISOString(),
+      points: Math.abs(pointChange),
+      type: pointChange > 0 ? "earn" : "use",
     });
 
-    fs.writeFileSync(pointsPath, JSON.stringify(pointsData, null, 2));
+    // 업데이트된 데이터 저장
+    fs.writeFileSync(pointsPath, JSON.stringify(pointData, null, 2));
 
-    return true;
+    return pointData;
   } catch (error) {
-    console.error("Error in survey participation:", error);
-    return false;
+    console.error("Error updating user points:", error);
+    throw error;
   }
 }
-
-// 뷰 엔진 설정
-app.set("view engine", "ejs");
-app.set("survey", "./survey");
 
 //라우팅
 app.get("/", (req, res) => {
@@ -397,161 +349,12 @@ app.post("/surveys", (req, res) => {
   }
 });
 
-// app.post("/surveys/:surveyId/participate", async (req, res) => {
-//   try {
-//     const surveyId = parseInt(req.params.surveyId);
-//     const { userId, responses } = req.body;
-
-//     console.log("Received participation request:", {
-//       surveyId,
-//       userId,
-//       responses,
-//     });
-
-//     // 참여자의 activities 파일 경로
-//     const activitiesPath = path.join(
-//       __dirname,
-//       "users",
-//       "activities",
-//       `${userId}.json`
-//     );
-
-//     // activities 파일 읽기
-//     let activities = JSON.parse(fs.readFileSync(activitiesPath, "utf8"));
-
-//     // 중복 참여 체크
-//     const hasParticipated = activities.participated_surveys.some(
-//       (survey) => survey.surveyId === surveyId
-//     );
-
-//     if (hasParticipated) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "이미 참여한 설문입니다.",
-//       });
-//     }
-
-//     // 설문 참여자 수 업데이트
-//     const updatedSurvey = updateSurveyParticipants(surveyId);
-
-//     // participated_surveys 배열에 참여 기록 추가
-//     activities.participated_surveys.push({
-//       surveyId: surveyId,
-//       participatedAt: new Date().toISOString(),
-//       responses: responses,
-//     });
-
-//     // 업데이트된 activities 저장
-//     fs.writeFileSync(activitiesPath, JSON.stringify(activities, null, 2));
-
-//     // 통계 데이터 업데이트
-//     const updatedStats = updateSurveyStats(surveyId, userId, responses);
-
-//     console.log("Successfully updated survey, activities and stats");
-
-//     res.status(200).json({
-//       success: true,
-//       message: "Survey participation recorded successfully",
-//       updatedSurvey,
-//       stats: updatedStats,
-//     });
-//   } catch (error) {
-//     console.error("Survey participation error:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "참여 처리 중 오류가 발생했습니다.",
-//       error: error.message,
-//     });
-//   }
-// });
-
-// app.post("/surveys/:surveyId/participate", async (req, res) => {
-//   try {
-//     const surveyId = parseInt(req.params.surveyId);
-//     const { userId, responses } = req.body;
-
-//     console.log("Received participation request:", {
-//       surveyId,
-//       userId,
-//       responses,
-//     });
-
-//     // 참여자의 activities 파일 경로
-//     const activitiesPath = path.join(
-//       __dirname,
-//       "users",
-//       "activities",
-//       `${userId}.json`
-//     );
-
-//     // activities 파일 읽기 또는 초기화
-//     let activities;
-//     try {
-//       activities = JSON.parse(fs.readFileSync(activitiesPath, "utf8"));
-//     } catch {
-//       activities = {
-//         created_surveys: [],
-//         participated_surveys: [],
-//       };
-//     }
-
-//     // participated_surveys가 없으면 초기화
-//     if (!activities.participated_surveys) {
-//       activities.participated_surveys = [];
-//     }
-
-//     // 중복 참여 체크
-//     const hasParticipated = activities.participated_surveys.some(
-//       (survey) => survey.surveyId === surveyId
-//     );
-
-//     if (hasParticipated) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "이미 참여한 설문입니다.",
-//       });
-//     }
-
-//     // 설문 참여자 수 업데이트
-//     const updatedSurvey = updateSurveyParticipants(surveyId);
-
-//     // participated_surveys 배열에 참여 기록 추가
-//     activities.participated_surveys.push({
-//       surveyId: surveyId,
-//       participatedAt: new Date().toISOString(),
-//       responses: responses,
-//     });
-
-//     // 업데이트된 activities 저장
-//     fs.writeFileSync(activitiesPath, JSON.stringify(activities, null, 2));
-
-//     // 통계 데이터 업데이트
-//     const updatedStats = updateSurveyStats(surveyId, userId, responses);
-
-//     console.log("Successfully updated survey, activities and stats");
-
-//     res.status(200).json({
-//       success: true,
-//       message: "Survey participation recorded successfully",
-//       updatedSurvey,
-//       stats: updatedStats,
-//     });
-//   } catch (error) {
-//     console.error("Survey participation error:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "참여 처리 중 오류가 발생했습니다.",
-//       error: error.message,
-//     });
-//   }
-// });
-
 app.post("/surveys/:surveyId/participate", async (req, res) => {
   try {
     const surveyId = parseInt(req.params.surveyId);
     const { userId, responses } = req.body;
 
-    // 1. 먼저 중복 참여 체크
+    // 1. 중복 참여 체크
     const activitiesPath = path.join(
       __dirname,
       "users",
@@ -571,13 +374,20 @@ app.post("/surveys/:surveyId/participate", async (req, res) => {
       });
     }
 
-    // 2. 통계 데이터 업데이트 (여기서 에러가 나면 activities는 업데이트되지 않음)
+    // 2. 통계 데이터 업데이트
     const updatedStats = updateSurveyStats(surveyId, userId, responses);
 
     // 3. 설문 참여자 수 업데이트
     const updatedSurvey = updateSurveyParticipants(surveyId);
 
-    // 4. activities 업데이트 (모든 것이 성공한 후에 마지막으로 수행)
+    // 4. 포인트 업데이트 - 설문의 보상 포인트만큼 지급
+    const pointResult = await updateUserPoints(
+      userId,
+      updatedSurvey.rewardAmount,
+      `${updatedSurvey.title}` // 설문 제목을 포인트 내역에 추가
+    );
+
+    // 5. activities 업데이트
     activities.participated_surveys.push({
       surveyId: surveyId,
       participatedAt: new Date().toISOString(),
@@ -590,6 +400,10 @@ app.post("/surveys/:surveyId/participate", async (req, res) => {
       message: "Survey participation recorded successfully",
       updatedSurvey,
       stats: updatedStats,
+      points: {
+        earned: updatedSurvey.rewardAmount,
+        current: pointResult.currentPoints,
+      },
     });
   } catch (error) {
     console.error("Survey participation error:", error);
@@ -608,41 +422,6 @@ app.get("/survey/:id", (req, res) => {
     res.json(surveyData);
   } catch (error) {
     res.status(404).send("Survey not found");
-  }
-});
-
-// 기프티콘 데이터를 제공하는 라우트
-app.get("/gifticons", (req, res) => {
-  try {
-    const gifticons = getGifticonData();
-    res.json(gifticons);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Failed to load gifticons");
-  }
-});
-
-// 포인트 내역 조회
-app.get("/points/history", (req, res) => {
-  try {
-    const pointHistory = readJsonFileSync(
-      path.join(__dirname, "points", "points_history.json")
-    );
-    res.json(pointHistory);
-  } catch (error) {
-    res.status(500).send("Failed to load point history");
-  }
-});
-
-// 현재 포인트 조회
-app.get("/points/current", (req, res) => {
-  try {
-    const currentPoints = readJsonFileSync(
-      path.join(__dirname, "points", "current_points.json")
-    );
-    res.json(currentPoints);
-  } catch (error) {
-    res.status(500).send("Failed to load current points");
   }
 });
 
@@ -720,7 +499,7 @@ app.get("/users/:userId/profile", (req, res) => {
   res.json(profile);
 });
 
-// backend.js
+//
 app.get("/users/:userId/surveys", (req, res) => {
   const userId = req.params.userId;
   try {
@@ -771,4 +550,66 @@ app.get("/users/:userId/activities", (req, res) => {
   }
 });
 
-app.listen(port);
+// 포인트 내역 조회 API
+app.get("/users/:userId/points/history", (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const pointsPath = path.join(
+      __dirname,
+      "users",
+      "points",
+      `${userId}.json`
+    );
+
+    const userData = JSON.parse(fs.readFileSync(pointsPath, "utf8"));
+    res.json(userData.history);
+  } catch (error) {
+    console.error("Error loading point history:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to load point history",
+      error: error.message,
+    });
+  }
+});
+
+// 현재 포인트 조회 API
+app.get("/users/:userId/points/current", (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const pointsPath = path.join(
+      __dirname,
+      "users",
+      "points",
+      `${userId}.json`
+    );
+
+    const userData = JSON.parse(fs.readFileSync(pointsPath, "utf8"));
+    res.json({
+      success: true,
+      currentPoints: userData.currentPoints,
+    });
+  } catch (error) {
+    console.error("Error loading current points:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to load current points",
+      error: error.message,
+    });
+  }
+});
+
+// 기프티콘 데이터를 제공하는 라우트
+app.get("/gifticons", (req, res) => {
+  try {
+    const gifticons = getGifticonData();
+    res.json(gifticons);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Failed to load gifticons");
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on 3000`);
+});

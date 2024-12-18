@@ -1,7 +1,9 @@
 import 'package:app/design/colors.dart';
 import 'package:app/models/survey_model.dart';
+import 'package:app/provider/user_provider.dart';
 import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 // 화면 구현
 class PointHistoryScreen extends StatelessWidget {
@@ -9,6 +11,9 @@ class PointHistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userId =
+        Provider.of<UserProvider>(context, listen: false).currentUser!.id;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -27,7 +32,7 @@ class PointHistoryScreen extends StatelessWidget {
         ),
       ),
       body: FutureBuilder<List<PointHistory>>(
-        future: ApiService().getPointHistory(), // API 메서드 필요
+        future: ApiService().getPointHistory(userId), // API 메서드 필요
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -63,7 +68,8 @@ class PointHistoryScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     FutureBuilder<int>(
-                      future: ApiService().getCurrentPoints(), // API 메서드 필요
+                      future:
+                          ApiService().getCurrentPoints(userId), // API 메서드 필요
                       builder: (context, pointSnapshot) {
                         if (!pointSnapshot.hasData) {
                           return const CircularProgressIndicator(

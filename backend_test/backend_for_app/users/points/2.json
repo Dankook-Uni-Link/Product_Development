@@ -1,4 +1,11 @@
 {
-  "currentPoints": 0,
-  "history": []
+  "currentPoints": 422,
+  "history": [
+    {
+      "title": "안녕",
+      "date": "2024-12-18T18:34:12.174Z",
+      "points": 100,
+      "type": "earn"
+    }
+  ]
 }

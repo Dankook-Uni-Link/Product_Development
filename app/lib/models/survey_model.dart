@@ -180,68 +180,6 @@ class PointHistory {
   }
 }
 
-// class SurveyStats {
-//   final int surveyId;
-//   final int currentResponses;
-//   final int targetNumber;
-//   final double responseRate;
-//   final int expectedPoints;
-//   final Map<String, int> responsesByAge;
-//   final Map<String, int> responsesByGender;
-//   final Map<String, int> responsesByLocation;
-//   final List<QuestionStats> questionStats;
-
-//   SurveyStats({
-//     required this.surveyId,
-//     required this.currentResponses,
-//     required this.targetNumber,
-//     required this.responseRate,
-//     required this.expectedPoints,
-//     required this.responsesByAge,
-//     required this.responsesByGender,
-//     required this.responsesByLocation,
-//     required this.questionStats,
-//   });
-
-//   factory SurveyStats.fromJson(Map<String, dynamic> json) {
-//     return SurveyStats(
-//       surveyId: json['surveyId'],
-//       currentResponses: json['currentResponses'],
-//       targetNumber: json['targetNumber'],
-//       responseRate: json['responseRate'].toDouble(),
-//       expectedPoints: json['expectedPoints'],
-//       responsesByAge: Map<String, int>.from(json['responsesByAge']),
-//       responsesByGender: Map<String, int>.from(json['responsesByGender']),
-//       responsesByLocation: Map<String, int>.from(json['responsesByLocation']),
-//       questionStats: (json['questionStats'] as List)
-//           .map((q) => QuestionStats.fromJson(q))
-//           .toList(),
-//     );
-//   }
-// }
-
-// class QuestionStats {
-//   final int questionId;
-//   final String question;
-//   final String type;
-//   final Map<String, int> options;
-
-//   QuestionStats({
-//     required this.questionId,
-//     required this.question,
-//     required this.type,
-//     required this.options,
-//   });
-
-//   factory QuestionStats.fromJson(Map<String, dynamic> json) {
-//     return QuestionStats(
-//       questionId: json['questionId'],
-//       question: json['question'],
-//       type: json['type'],
-//       options: Map<String, int>.from(json['options']),
-//     );
-//   }
-// }
 class SurveyStats {
   final Summary summary;
   final Map<String, QuestionStats> questions;
