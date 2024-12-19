@@ -9,3 +9,4 @@ mysql command line client에서
 일반 터미널에서
 
     ->"C:\Program Files\MySQL\MySQL Server 9.1\bin\mysql" -u root -p survey_db < survey_structure.sql
+![image](https://github.com/user-attachments/assets/ba3c84bb-4f0a-48a5-a629-b4799a1c82ff)
