@@ -8,7 +8,7 @@ import 'dart:convert';
 
 class ApiService {
   final String baseUrl =
-      "http://localhost:3000"; // 10.0.2.2 대신 localhost 사용 // 애뮬레이터는 "http://10.0.2.2:3000";
+      "http://10.0.2.2:3000"; //"http://localhost:3000"; // 10.0.2.2 대신 localhost 사용 // 애뮬레이터는 "http://10.0.2.2:3000";//
 
   // API 호출 시 헤더를 설정하는 메서드
   Future<Map<String, String>> _getHeaders() async {
@@ -172,6 +172,10 @@ class ApiService {
       };
 
       print('Request body: ${jsonEncode(requestBody)}');
+      print('Submitting survey response:');
+      print('Survey ID: $surveyId');
+      print('User ID: $userId');
+      print('Responses: $responses'); // 어떤 형태로 응답이 전송되는지 확인
 
       final response = await http.post(
         Uri.parse('$baseUrl/surveys/$surveyId/participate'),
@@ -181,6 +185,8 @@ class ApiService {
 
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
+      print('Server response:');
+      print('Status code: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

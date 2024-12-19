@@ -6,6 +6,9 @@ const pool = require("./db"); // 추가
 const app = express();
 const port = 3000;
 
+const fs = require("fs");
+const path = require("path");
+
 app.use(express.json());
 app.set("view engine", "ejs");
 app.set("survey", "./survey");
@@ -705,22 +708,37 @@ app.get("/users/:userId/points/current", async (req, res) => {
   }
 });
 
-// 기프티콘 목록 조회 API 수정
-app.get("/gifticons", async (req, res) => {
-  try {
-    const [gifticons] = await pool.query(
-      "SELECT * FROM gifticons ORDER BY price ASC"
-    );
-
-    res.json(gifticons);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "기프티콘 목록을 불러오는데 실패했습니다.",
-    });
+// 특정 파일의 JSON 데이터를 읽어오는 함수
+function readJsonFileSync(filepath, encoding) {
+  if (typeof encoding === "undefined") {
+    encoding = "utf8";
   }
-});
+  const file = fs.readFileSync(filepath, encoding);
+  return JSON.parse(file);
+}
+
+// 기프티콘 데이터를 가져오는 함수
+function getGifticonData() {
+  const filepath = path.join(__dirname, "gifticon", "gifticons.json");
+  return readJsonFileSync(filepath);
+}
+
+// // 기프티콘 목록 조회 API 수정
+// app.get("/gifticons", async (req, res) => {
+//   try {
+//     const [gifticons] = await pool.query(
+//       "SELECT * FROM gifticons ORDER BY price ASC"
+//     );
+
+//     res.json(gifticons);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       success: false,
+//       message: "기프티콘 목록을 불러오는데 실패했습니다.",
+//     });
+//   }
+// });
 
 app.post("/surveys", async (req, res) => {
   try {
@@ -738,6 +756,17 @@ app.post("/surveys", async (req, res) => {
       message: "Failed to create survey",
       error: error.message,
     });
+  }
+});
+
+// 기프티콘 데이터를 제공하는 라우트
+app.get("/gifticons", (req, res) => {
+  try {
+    const gifticons = getGifticonData();
+    res.json(gifticons);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Failed to load gifticons");
   }
 });
 

@@ -39,9 +39,9 @@ class Question {
   // 문자열을 QuestionType으로 변환하는 헬퍼 메서드
   static QuestionType _parseQuestionType(String? type) {
     switch (type?.toLowerCase()) {
-      case 'multiple':
+      case 'multiplechoice':
         return QuestionType.multipleChoice;
-      case 'single':
+      case 'singlechoice':
       default:
         return QuestionType.singleChoice;
     }

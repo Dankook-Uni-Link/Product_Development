@@ -5,7 +5,8 @@ import 'package:app/services/token_service.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  final String baseUrl = "http://localhost:3000"; //"http://10.0.2.2:3000";
+  final String baseUrl =
+      "http://10.0.2.2:3000"; //"http://localhost:3000"; //"http://10.0.2.2:3000";//
 
   Future<User> signUp({
     required String email,
