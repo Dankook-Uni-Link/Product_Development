@@ -8,7 +8,7 @@ import 'dart:convert';
 
 class ApiService {
   final String baseUrl =
-      "http://10.0.2.2:3000"; //"http://localhost:3000"; // 10.0.2.2 대신 localhost 사용 // 애뮬레이터는 10.0.2.2
+      "http://localhost:3000"; // 10.0.2.2 대신 localhost 사용 // 애뮬레이터는 "http://10.0.2.2:3000";
 
   // API 호출 시 헤더를 설정하는 메서드
   Future<Map<String, String>> _getHeaders() async {
@@ -237,39 +237,7 @@ class ApiService {
   }
 
 //포인트 관련 API 메서드
-  // Future<List<PointHistory>> getPointHistory() async {
-  //   final url = Uri.parse('$baseUrl/points/history');
 
-  //   try {
-  //     final response = await http.get(url);
-
-  //     if (response.statusCode == 200) {
-  //       final List<dynamic> jsonList = jsonDecode(response.body);
-  //       return jsonList.map((json) => PointHistory.fromJson(json)).toList();
-  //     } else {
-  //       throw Exception('Failed to load point history');
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Error: $e');
-  //   }
-  // }
-
-  // Future<int> getCurrentPoints() async {
-  //   final url = Uri.parse('$baseUrl/points/current');
-
-  //   try {
-  //     final response = await http.get(url);
-
-  //     if (response.statusCode == 200) {
-  //       final Map<String, dynamic> json = jsonDecode(response.body);
-  //       return json['points'] as int;
-  //     } else {
-  //       throw Exception('Failed to load current points');
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Error: $e');
-  //   }
-  // }
   Future<List<PointHistory>> getPointHistory(int userId) async {
     final url = Uri.parse('$baseUrl/users/$userId/points/history');
     try {

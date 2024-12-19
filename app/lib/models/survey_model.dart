@@ -16,21 +16,6 @@ class Survey {
   final SurveyStatus status;
   final String creatorName; // creatorName 필드 추가
 
-  // Survey({
-  //   this.id,
-  //   required this.creatorId,
-  //   required this.title,
-  //   required this.description,
-  //   required this.questions,
-  //   required this.rewardAmount,
-  //   required this.targetResponses,
-  //   required this.targetConditions,
-  //   required this.createdAt,
-  //   required this.expiresAt,
-  //   required this.status,
-  //   this.currentResponses = 0,
-  // });
-
   Survey({
     this.id,
     required this.creatorId,
@@ -69,29 +54,6 @@ class Survey {
     if (targetResponses <= 0) return 0.0;
     return (currentResponses / targetResponses).clamp(0.0, 1.0);
   }
-
-  // factory Survey.fromJson(Map<String, dynamic> json) {
-  //   print('Survey JSON data: $json'); // 데이터 확인용 로그
-  //   return Survey(
-  //     id: json['id'],
-  //     creatorId: json['creatorId'],
-  //     title: json['title'],
-  //     description: json['description'],
-  //     questions: (json['questions'] as List).map((q) {
-  //       print('Question data: $q'); // 각 질문 데이터 확인용 로그
-  //       return Question.fromJson(q);
-  //     }).toList(),
-  //     rewardAmount: json['rewardAmount'],
-  //     targetResponses: json['targetResponses'],
-  //     targetConditions:
-  //         SurveyTargetConditions.fromJson(json['targetConditions']),
-  //     createdAt: DateTime.parse(json['createdAt']),
-  //     expiresAt: DateTime.parse(json['expiresAt']),
-  //     status: SurveyStatus.values
-  //         .firstWhere((e) => e.toString() == 'SurveyStatus.${json['status']}'),
-  //     currentResponses: json['currentResponses'] ?? 0,
-  //   );
-  // }
 
   factory Survey.fromJson(Map<String, dynamic> json) {
     // 각 필드 데이터 로깅
@@ -234,29 +196,6 @@ class SurveyTargetConditions {
       };
 }
 
-// // 포인트 내역을 위한 모델
-// class PointHistory {
-//   final String title;
-//   final DateTime date;
-//   final int points;
-//   final String type; // 'earn' or 'use'
-
-//   PointHistory({
-//     required this.title,
-//     required this.date,
-//     required this.points,
-//     required this.type,
-//   });
-
-//   factory PointHistory.fromJson(Map<String, dynamic> json) {
-//     return PointHistory(
-//       title: json['title'],
-//       date: DateTime.parse(json['date']),
-//       points: json['points'],
-//       type: json['type'],
-//     );
-//   }
-// }
 class PointHistory {
   final int id;
   final int points;

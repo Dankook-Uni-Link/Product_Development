@@ -1,7 +1,5 @@
 import 'package:app/design/colors.dart';
-import 'package:app/models/survey_model.dart';
 import 'package:flutter/material.dart';
-import 'survey_screen.dart';
 
 class Survey_sell_DetailScreen extends StatelessWidget {
   final String title;

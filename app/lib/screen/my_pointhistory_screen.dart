@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-// 화면 구현
 class PointHistoryScreen extends StatelessWidget {
   const PointHistoryScreen({super.key});
 
