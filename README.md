@@ -1,3 +1,4 @@
+DB structure 그대로 사용하면 됨 - survey_structure.sql 파일
 mysql command line client에서
 
     ->CREATE DATABASE survey_db;
